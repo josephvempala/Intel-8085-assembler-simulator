@@ -9,9 +9,9 @@ namespace AssemblerSimulator8085
         {
 
         }
+
         public static void Main()
         {
-            string jeeme = JsonSerializer.Serialize(new State());
         }
     }
 }

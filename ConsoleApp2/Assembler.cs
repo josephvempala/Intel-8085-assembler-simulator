@@ -56,12 +56,9 @@ namespace AssemblerSimulator8085
 
         private void Assemble1ByteInstruction(Match match)
         {
-            if (counter <= ushort.MaxValue)
-            {
-                byte inst_value = Instructions[match.Groups["1"].Value];
-                temp_memory[counter] = inst_value;
-                counter++;
-            }
+            byte inst_value = Instructions[match.Groups["1"].Value];
+            temp_memory[counter] = inst_value;
+            counter++;
         }
 
         private void Assemble2ByteInstruction(Match match)

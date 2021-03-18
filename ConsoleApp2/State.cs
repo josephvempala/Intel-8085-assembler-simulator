@@ -9,6 +9,7 @@ namespace AssemblerSimulator8085
         private bool cy, p, ac, z, s; //Flags
         private byte flagreg; // flag register
         private byte[] memory = new byte[ushort.MaxValue + 1]; //16 bit memory
+
         public bool CY 
         {
             get
@@ -86,6 +87,7 @@ namespace AssemblerSimulator8085
                 z = value;
             }
         }
+
         public bool S
         {
             get
@@ -105,6 +107,7 @@ namespace AssemblerSimulator8085
                 s = value;
             }
         }
+
         public ushort PSW
         {
             get
@@ -118,6 +121,7 @@ namespace AssemblerSimulator8085
                 A = temp[1];
             }
         }
+
         public ushort BC
         {
             get
@@ -131,6 +135,7 @@ namespace AssemblerSimulator8085
                 C = temp[1];
             }
         }
+
         public ushort DE
         {
             get
@@ -144,6 +149,7 @@ namespace AssemblerSimulator8085
                 E = temp[1];
             }
         }
+
         public ushort HL
         {
             get
@@ -157,6 +163,7 @@ namespace AssemblerSimulator8085
                 L = temp[1];
             }
         }
+
         public byte B { get; set; }
         public byte C { get; set; }
         public byte D { get; set; }

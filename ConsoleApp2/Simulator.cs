@@ -6,19 +6,23 @@ namespace AssemblerSimulator8085
     {
         private ushort start_at = 0; //default at 0
         private State _state;
+
         public Simulator(State state)
         {
             _state = state;
         }
+
         public void Reset()
         {
             _state.PC = start_at;
         }
+
         public void StartAt(ushort memory_address)
         {
             start_at = memory_address;
             Reset();
         }
+
         private ushort GetNextTwoBytes()
         {
             if (_state.PC <= ushort.MaxValue - 2)
@@ -34,6 +38,7 @@ namespace AssemblerSimulator8085
                 return BitConverter.ToUInt16(_state.Memory, 0);
             }
         }
+
         private void Simulate()
         {
             switch (_state.Memory[_state.PC])
@@ -985,6 +990,7 @@ namespace AssemblerSimulator8085
             }
             _state.PC++;
         }
+
         private void PushToStack(ushort element)
         {
             _state.SP -= 2;
@@ -992,11 +998,13 @@ namespace AssemblerSimulator8085
             _state.Memory[_state.SP + 1] = temp[0];
             _state.Memory[_state.SP + 2] = temp[1];
         }
+
         private ushort PopFromStack()
         {
             _state.SP += 2;
             return BitConverter.ToUInt16(_state.Memory, _state.SP-2);
         }
+
         private static bool CheckParity(byte Reg)
         {
             int count = 0;
@@ -1011,6 +1019,7 @@ namespace AssemblerSimulator8085
             }
             return (count % 2 == 0);
         }
+
         private void LogicalOpFlags()
         {
             _state.CY = false;
@@ -1019,6 +1028,7 @@ namespace AssemblerSimulator8085
             _state.S = (_state.A / 128 == 1);
             _state.P = CheckParity(_state.A);
         }
+
         private void ArithmeticOpFlags(ushort result, bool keep_carry)
         {
             var temp = BitConverter.GetBytes(result);
@@ -1029,6 +1039,7 @@ namespace AssemblerSimulator8085
             _state.S = (result / 128 == 1);
             _state.P = CheckParity(temp[0]);
         }
+
         private byte AddByte(byte augend, byte addend, bool keep_carry)
         {
             ushort result = (ushort)(augend + addend);
@@ -1037,6 +1048,7 @@ namespace AssemblerSimulator8085
                 _state.AC = true;
             return (byte)result;
         }
+
         private byte AddByteWithCarry(byte augend, byte addend, bool keep_carry)
         {
             ushort result = (ushort)(augend + addend + (_state.CY ? 1 : 0));
@@ -1059,6 +1071,7 @@ namespace AssemblerSimulator8085
             ArithmeticOpFlags(result, keep_carry);
             return (byte)result;
         }
+
         public void Run()
         {
             while(_state.Memory[_state.PC]!=0x76 && _state.PC<=ushort.MaxValue)
