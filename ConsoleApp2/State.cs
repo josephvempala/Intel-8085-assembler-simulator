@@ -10,15 +10,15 @@ namespace AssemblerSimulator8085
         private byte flagreg; // flag register
         private byte[] memory = new byte[ushort.MaxValue + 1]; //16 bit memory
 
-        public bool CY 
+        public bool CY
         {
             get
             {
                 return cy;
             }
-            set 
+            set
             {
-                if(value)
+                if (value)
                 {
                     flagreg += 1;
                 }
@@ -175,6 +175,5 @@ namespace AssemblerSimulator8085
         public ushort SP { get; set; }
         public ushort PC { get; set; }
         public byte[] Memory { get { return memory; } set { memory = value; } }
-        public List<AssembleError> Errors { get; internal set; }
     }
 }

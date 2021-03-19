@@ -4,23 +4,11 @@ namespace AssemblerSimulator8085
 {
     internal class Simulator
     {
-        private ushort start_at = 0; //default at 0
         private State _state;
-
+        public Action halt; //to stop when hlt inst encountered
         public Simulator(State state)
         {
             _state = state;
-        }
-
-        public void Reset()
-        {
-            _state.PC = start_at;
-        }
-
-        public void StartAt(ushort memory_address)
-        {
-            start_at = memory_address;
-            Reset();
         }
 
         private ushort GetNextTwoBytes()
@@ -39,7 +27,7 @@ namespace AssemblerSimulator8085
             }
         }
 
-        private void Simulate()
+        public void Simulate()
         {
             switch (_state.Memory[_state.PC])
             {
@@ -77,6 +65,7 @@ namespace AssemblerSimulator8085
                     }
                     break;
                 case 0x8://no inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0x9://dadb
                     _state.CY = (_state.HL + _state.BC > 0xffff);
@@ -110,6 +99,7 @@ namespace AssemblerSimulator8085
                     }
                     break;
                 case 0x10://no inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0x11://lxid
                     _state.DE = GetNextTwoBytes();
@@ -249,6 +239,7 @@ namespace AssemblerSimulator8085
                     _state.A = (byte)~_state.A;
                     break;
                 case 0x30://no_inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0x31://lxisp
                     _state.SP = GetNextTwoBytes();
@@ -462,8 +453,8 @@ namespace AssemblerSimulator8085
                 case 0x75://movm,l
                     _state.M = _state.L;
                     break;
-                case 0x76://movm,m
-                    _state.M = _state.M;
+                case 0x76://hlt
+                    halt.Invoke();
                     break;
                 case 0x77://movm,a
                     _state.M = _state.A;
@@ -818,6 +809,7 @@ namespace AssemblerSimulator8085
                         _state.PC = PopFromStack();
                     break;
                 case 0xd9://no_inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xda://jc
                     if (_state.CY)
@@ -837,6 +829,7 @@ namespace AssemblerSimulator8085
                         _state.PC += 2;
                     break;
                 case 0xdd://no_inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xde://sbi
                     _state.PC++;
@@ -914,6 +907,7 @@ namespace AssemblerSimulator8085
                         _state.PC += 2;
                     break;
                 case 0xed://no_inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xee://xri
                     _state.PC++;
@@ -980,6 +974,7 @@ namespace AssemblerSimulator8085
                         _state.PC += 2;
                     break;
                 case 0xfd://no_inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xfe://cpi
                     _state.PC++;
