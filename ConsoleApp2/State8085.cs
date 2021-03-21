@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace AssemblerSimulator8085
 {
-    public class State
+    public class State8085
     {
         private bool cy, p, ac, z, s; //Flags
         private byte flagreg; // flag register

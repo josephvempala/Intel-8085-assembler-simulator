@@ -2,11 +2,11 @@
 
 namespace AssemblerSimulator8085
 {
-    internal class Simulator
+    internal class Simulator8085
     {
-        private State _state;
+        private State8085 _state;
         public Action halt; //to stop when hlt inst encountered
-        public Simulator(State state)
+        public Simulator8085(State8085 state)
         {
             _state = state;
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AssemblerSimulator8085
 { 
-    partial class Assembler
+    partial class Assembler8085
     {
         private readonly Dictionary<string, byte> Instructions = new Dictionary<string, byte>()
         {
