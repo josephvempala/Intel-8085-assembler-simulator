@@ -6,6 +6,7 @@ namespace AssemblerSimulator8085
     {
         private State8085 _state;
         public Action halt; //to stop when hlt inst encountered
+
         public Simulator8085(State8085 state)
         {
             _state = state;
@@ -34,181 +35,180 @@ namespace AssemblerSimulator8085
                 case 0x0://nop
                     break;
                 case 0x1://lxib
-                    _state.BC = GetNextTwoBytes();
+                    _state.registers.BC = GetNextTwoBytes();
                     _state.PC += 2;
                     break;
                 case 0x2: //staxb
-                    _state.Memory[_state.BC] = _state.A;
+                    _state.Memory[_state.registers.BC] = _state.registers.A;
                     break;
                 case 0x3://inxb
-                    _state.BC++;
+                    _state.registers.BC++;
                     break;
                 case 0x4://inrb
-                    _state.B = AddByte(_state.B, 1, true);
+                    _state.registers.B = AddByte(_state.registers.B, 1, true);
                     break;
                 case 0x5://dcrb
-                    _state.B = SubtractByte(_state.B, 1, true);
+                    _state.registers.B = SubtractByte(_state.registers.B, 1, true);
                     break;
                 case 0x6://mvib
                     _state.PC++;
-                    _state.B = _state.Memory[_state.PC];
+                    _state.registers.B = _state.Memory[_state.PC];
                     break;
                 case 0x7://rlc
-                    if(_state.A>0x80)
+                    if(_state.registers.A>0x80)
                     {
-                        _state.A = (byte)(_state.A << 1);
-                        _state.A++;
+                        _state.registers.A = (byte)(_state.registers.A << 1);
+                        _state.registers.A++;
                     }
                     else
                     {
-                        _state.A = (byte)(_state.A << 1);
+                        _state.registers.A = (byte)(_state.registers.A << 1);
                     }
                     break;
                 case 0x8://no inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0x9://dadb
-                    _state.CY = (_state.HL + _state.BC > 0xffff);
-                    _state.HL = (ushort)(_state.HL + _state.BC);
+                    _state.flags.CY = (_state.registers.HL + _state.registers.BC > 0xffff);
+                    _state.registers.HL = (ushort)(_state.registers.HL + _state.registers.BC);
                     break;
                 case 0xa://ldaxb
-                    _state.A = _state.Memory[_state.BC];
+                    _state.registers.A = _state.Memory[_state.registers.BC];
                     break;
                 case 0xb://dcxb
-                    _state.BC--;
+                    _state.registers.BC--;
                     break;
                 case 0xc://inrc
-                    _state.C = AddByte(_state.C, 1, true);
+                    _state.registers.C = AddByte(_state.registers.C, 1, true);
                     break;
                 case 0xd://dcrc
-                    _state.C = SubtractByte(_state.C, 1, true);
+                    _state.registers.C = SubtractByte(_state.registers.C, 1, true);
                     break;
                 case 0xe://mvic
                     _state.PC++;
-                    _state.C = _state.Memory[_state.PC];
+                    _state.registers.C = _state.Memory[_state.PC];
                     break;
                 case 0xf://rrc
-                    if(_state.A % 2 == 0)
+                    if(_state.registers.A % 2 == 0)
                     {
-                        _state.A = (byte)(_state.A >> 1);
+                        _state.registers.A = (byte)(_state.registers.A >> 1);
                     }
                     else
                     {
-                        _state.A = (byte)((_state.A >> 1));
-                        _state.A += 0x80;
+                        _state.registers.A = (byte)((_state.registers.A >> 1));
+                        _state.registers.A += 0x80;
                     }
                     break;
                 case 0x10://no inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0x11://lxid
-                    _state.DE = GetNextTwoBytes();
+                    _state.registers.DE = GetNextTwoBytes();
                     _state.PC += 2;
                     break;
                 case 0x12://staxd
-                    _state.Memory[_state.DE] = _state.A;
+                    _state.Memory[_state.registers.DE] = _state.registers.A;
                     break;
                 case 0x13://inxd
-                    _state.DE++;
+                    _state.registers.DE++;
                     break;
                 case 0x14://inrd
-                    _state.D = AddByte(_state.D, 1, true);
+                    _state.registers.D = AddByte(_state.registers.D, 1, true);
                     break;
                 case 0x15://dcrd
-                    _state.D = SubtractByte(_state.D, 1, true);
+                    _state.registers.D = SubtractByte(_state.registers.D, 1, true);
                     break;
                 case 0x16://mvid
                     _state.PC++;
-                    _state.D = _state.Memory[_state.PC];
+                    _state.registers.D = _state.Memory[_state.PC];
                     break;
                 case 0x17://ral
-                    if(_state.CY)
+                    if(_state.flags.CY)
                     {
-                        _state.A = (byte)(_state.A << 1);
-                        _state.A++;
-                        _state.CY = (_state.A > 0x80);
+                        _state.registers.A = (byte)(_state.registers.A << 1);
+                        _state.registers.A++;
+                        _state.flags.CY = (_state.registers.A > 0x80);
                     }
                     else
                     {
-                        _state.A = (byte)(_state.A << 1);
-                        _state.CY = (_state.A > 0x80);
+                        _state.registers.A = (byte)(_state.registers.A << 1);
+                        _state.flags.CY = (_state.registers.A > 0x80);
                     }
                     break;
                 case 0x18://no inst
                     break;
                 case 0x19://dadd
-                    _state.CY = (_state.HL + _state.DE > 0xffff);
-                    _state.HL = (ushort)(_state.HL + _state.DE);
+                    _state.flags.CY = (_state.registers.HL + _state.registers.DE > 0xffff);
+                    _state.registers.HL = (ushort)(_state.registers.HL + _state.registers.DE);
                     break;
                 case 0x1a://ldaxd
-                    _state.A = _state.Memory[_state.DE];
+                    _state.registers.A = _state.Memory[_state.registers.DE];
                     break;
                 case 0x1b://dcxd
-                    _state.DE--;
+                    _state.registers.DE--;
                     break;
                 case 0x1c://inre
-                    _state.E = AddByte(_state.E, 1, true);
+                    _state.registers.E = AddByte(_state.registers.E, 1, true);
                     break;
                 case 0x1d://dcre
-                    _state.E = SubtractByte(_state.E, 1, true);
+                    _state.registers.E = SubtractByte(_state.registers.E, 1, true);
                     break;
                 case 0x1e://mvie
                     _state.PC++;
-                    _state.E = _state.Memory[_state.PC];
+                    _state.registers.E = _state.Memory[_state.PC];
                     break;
                 case 0x1f://rar
-                    if(_state.CY)//refactor
+                    if(_state.flags.CY)//refactor
                     {
-                        if(_state.A%2==0)
+                        if(_state.registers.A%2==0)
                         {
-                            _state.A = (byte)(_state.A >> 1);
-                            _state.A += 0x80;
-                            _state.CY = false;
+                            _state.registers.A = (byte)(_state.registers.A >> 1);
+                            _state.registers.A += 0x80;
+                            _state.flags.CY = false;
                         }
                         else
                         {
-                            _state.A = (byte)(_state.A >> 1);
-                            _state.A += 0x80;
+                            _state.registers.A = (byte)(_state.registers.A >> 1);
+                            _state.registers.A += 0x80;
                         }
                     }
                     else
                     {
-                        if(_state.A%2==0)
+                        if(_state.registers.A%2==0)
                         {
-                            _state.A = (byte)(_state.A >> 1);
+                            _state.registers.A = (byte)(_state.registers.A >> 1);
                         }
                         else
                         {
-                            _state.A = (byte)(_state.A >> 1);
-                            _state.CY = true;
+                            _state.registers.A = (byte)(_state.registers.A >> 1);
+                            _state.flags.CY = true;
                         }
                     }
                     break;
                 case 0x20://rim
-
                     break;
                 case 0x21://lxih
-                    _state.HL = GetNextTwoBytes();
+                    _state.registers.HL = GetNextTwoBytes();
                     _state.PC += 2;
                     break;
                 case 0x22://shld
                     _state.PC++;
-                    _state.Memory[_state.PC] = _state.L;
+                    _state.Memory[_state.PC] = _state.registers.L;
                     _state.PC++;
-                    _state.Memory[_state.PC] = _state.H;
+                    _state.Memory[_state.PC] = _state.registers.H;
                     break;
                 case 0x23://inxh
-                    _state.HL++;
+                    _state.registers.HL++;
                     break;
                 case 0x24://inrh
-                    _state.H = AddByte(_state.H, 1, true);
+                    _state.registers.H = AddByte(_state.registers.H, 1, true);
                     break;
                 case 0x25://dcrh
-                    _state.H = SubtractByte(_state.H, 1, true);
+                    _state.registers.H = SubtractByte(_state.registers.H, 1, true);
                     break;
                 case 0x26://mvih
                     _state.PC++;
-                    _state.H = _state.Memory[_state.PC];
+                    _state.registers.H = _state.Memory[_state.PC];
                     break;
                 case 0x27://daa
 
@@ -216,27 +216,27 @@ namespace AssemblerSimulator8085
                 case 0x28://no-inst
                     break;
                 case 0x29://dadh
-                    _state.CY = (_state.HL + _state.HL > 0xffff);
-                    _state.HL = (ushort)(_state.HL + _state.HL);
+                    _state.flags.CY = (_state.registers.HL + _state.registers.HL > 0xffff);
+                    _state.registers.HL = (ushort)(_state.registers.HL + _state.registers.HL);
                     break;
                 case 0x2a://lhld
-                    _state.HL = BitConverter.ToUInt16(_state.Memory, GetNextTwoBytes());
+                    _state.registers.HL = BitConverter.ToUInt16(_state.Memory, GetNextTwoBytes());
                     break;
                 case 0x2b://dcxh
-                    _state.HL--;
+                    _state.registers.HL--;
                     break;
                 case 0x2c://inrl
-                    _state.L = AddByte(_state.L, 1, true);
+                    _state.registers.L = AddByte(_state.registers.L, 1, true);
                     break;
                 case 0x2d://dcrl
-                    _state.L = SubtractByte(_state.L, 1, true);
+                    _state.registers.L = SubtractByte(_state.registers.L, 1, true);
                     break;
                 case 0x2e://mvil
                     _state.PC++;
-                    _state.L = _state.Memory[_state.PC];
+                    _state.registers.L = _state.Memory[_state.PC];
                     break;
                 case 0x2f://cma
-                    _state.A = (byte)~_state.A;
+                    _state.registers.A = (byte)~_state.registers.A;
                     break;
                 case 0x30://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
@@ -246,7 +246,7 @@ namespace AssemblerSimulator8085
                     _state.PC += 2;
                     break;
                 case 0x32://sta
-                    _state.Memory[GetNextTwoBytes()] = _state.A;
+                    _state.Memory[GetNextTwoBytes()] = _state.registers.A;
                     _state.PC += 2;
                     break;
                 case 0x33://inxsp
@@ -263,453 +263,453 @@ namespace AssemblerSimulator8085
                     _state.M = _state.Memory[_state.PC];
                     break;
                 case 0x37://stc
-                    _state.CY = true;
+                    _state.flags.CY = true;
                     break;
                 case 0x38://no_inst
                     break;
                 case 0x39://dadsp
-                    _state.CY = (_state.HL + _state.SP > 0xffff);
-                    _state.HL = (ushort)(_state.HL + _state.SP);
+                    _state.flags.CY = (_state.registers.HL + _state.SP > 0xffff);
+                    _state.registers.HL = (ushort)(_state.registers.HL + _state.SP);
                     break;
                 case 0x3a://lda
-                    _state.A = _state.Memory[GetNextTwoBytes()];
+                    _state.registers.A = _state.Memory[GetNextTwoBytes()];
                     _state.PC += 2;
                     break;
                 case 0x3b://dcxsp
                     _state.SP--;
                     break;
                 case 0x3c://inra
-                    _state.A = AddByte(_state.A, 1, true);
+                    _state.registers.A = AddByte(_state.registers.A, 1, true);
                     break;
                 case 0x3d://dcra
-                    _state.A = SubtractByte(_state.A, 1, true);
+                    _state.registers.A = SubtractByte(_state.registers.A, 1, true);
                     break;
                 case 0x3e://mvia
                     _state.PC++;
-                    _state.A = _state.Memory[_state.PC];
+                    _state.registers.A = _state.Memory[_state.PC];
                     break;
                 case 0x3f://cmc
-                    _state.CY = !_state.CY;
+                    _state.flags.CY = !_state.flags.CY;
                     break;
                 case 0x40://movb,b        
-                    _state.B = _state.B;
+                    _state.registers.B = _state.registers.B;
                     break;
                 case 0x41://movb,c        
-                    _state.B = _state.C;
+                    _state.registers.B = _state.registers.C;
                     break;
                 case 0x42://movb,d
-                    _state.B = _state.D;
+                    _state.registers.B = _state.registers.D;
                     break;
                 case 0x43://movb,e
-                    _state.B = _state.E;
+                    _state.registers.B = _state.registers.E;
                     break;
                 case 0x44://movb,h
-                    _state.B = _state.H;
+                    _state.registers.B = _state.registers.H;
                     break;
                 case 0x45://movb,l
-                    _state.B = _state.L;
+                    _state.registers.B = _state.registers.L;
                     break;
                 case 0x46://movb,m
-                    _state.B = _state.M;
+                    _state.registers.B = _state.M;
                     break;
                 case 0x47://movb,a
-                    _state.B = _state.A;
+                    _state.registers.B = _state.registers.A;
                     break;
                 case 0x48://movc,b
-                    _state.C = _state.B;
+                    _state.registers.C = _state.registers.B;
                     break;
                 case 0x49://movc,c
-                    _state.C = _state.C;
+                    _state.registers.C = _state.registers.C;
                     break;
                 case 0x4a://movc,d
-                    _state.C = _state.D;
+                    _state.registers.C = _state.registers.D;
                     break;
                 case 0x4b://movc,e
-                    _state.C = _state.E;
+                    _state.registers.C = _state.registers.E;
                     break;
                 case 0x4c://movc,h
-                    _state.C = _state.H;
+                    _state.registers.C = _state.registers.H;
                     break;
                 case 0x4d://movc,l
-                    _state.C = _state.L;
+                    _state.registers.C = _state.registers.L;
                     break;
                 case 0x4e://movc,m
-                    _state.C = _state.M;
+                    _state.registers.C = _state.M;
                     break;
                 case 0x4f://movc,a
-                    _state.C = _state.A;
+                    _state.registers.C = _state.registers.A;
                     break;
                 case 0x50://movd,b
-                    _state.D = _state.B;
+                    _state.registers.D = _state.registers.B;
                     break;
                 case 0x51://movd,c
-                    _state.D = _state.C;
+                    _state.registers.D = _state.registers.C;
                     break;
                 case 0x52://movd,d
-                    _state.D = _state.D;
+                    _state.registers.D = _state.registers.D;
                     break;
                 case 0x53://movd,e
-                    _state.D = _state.E;
+                    _state.registers.D = _state.registers.E;
                     break;
                 case 0x54://movd,h
-                    _state.D = _state.H;
+                    _state.registers.D = _state.registers.H;
                     break;
                 case 0x55://movd,l
-                    _state.D = _state.L;
+                    _state.registers.D = _state.registers.L;
                     break;
                 case 0x56://movd,m
-                    _state.D = _state.M;
+                    _state.registers.D = _state.M;
                     break;
                 case 0x57://movd,a
-                    _state.D = _state.A;
+                    _state.registers.D = _state.registers.A;
                     break;
                 case 0x58://move,b
-                    _state.E = _state.B;
+                    _state.registers.E = _state.registers.B;
                     break;
                 case 0x59://move,c
-                    _state.E = _state.C;
+                    _state.registers.E = _state.registers.C;
                     break;
                 case 0x5a://move,d
-                    _state.E = _state.D;
+                    _state.registers.E = _state.registers.D;
                     break;
                 case 0x5b://move,e
-                    _state.E = _state.E;
+                    _state.registers.E = _state.registers.E;
                     break;
                 case 0x5c://move,h
-                    _state.E = _state.H;
+                    _state.registers.E = _state.registers.H;
                     break;
                 case 0x5d://move,l
-                    _state.E = _state.L;
+                    _state.registers.E = _state.registers.L;
                     break;
                 case 0x5e://move,m
-                    _state.E = _state.M;
+                    _state.registers.E = _state.M;
                     break;
                 case 0x5f://move,a
-                    _state.E = _state.A;
+                    _state.registers.E = _state.registers.A;
                     break;
                 case 0x60://movh,b
-                    _state.H = _state.B;
+                    _state.registers.H = _state.registers.B;
                     break;
                 case 0x61://movh,c
-                    _state.H = _state.C;
+                    _state.registers.H = _state.registers.C;
                     break;
                 case 0x62://movh,d
-                    _state.H = _state.D;
+                    _state.registers.H = _state.registers.D;
                     break;
                 case 0x63://movh,e
-                    _state.H = _state.E;
+                    _state.registers.H = _state.registers.E;
                     break;
                 case 0x64://movh,h
-                    _state.H = _state.H;
+                    _state.registers.H = _state.registers.H;
                     break;
                 case 0x65://movh,l
-                    _state.H = _state.L;
+                    _state.registers.H = _state.registers.L;
                     break;
                 case 0x66://movh,m
-                    _state.H = _state.M;
+                    _state.registers.H = _state.M;
                     break;
                 case 0x67://movh,a
-                    _state.H = _state.A;
+                    _state.registers.H = _state.registers.A;
                     break;
                 case 0x68://movl,b
-                    _state.L = _state.B;
+                    _state.registers.L = _state.registers.B;
                     break;
                 case 0x69://movl,c
-                    _state.L = _state.C;
+                    _state.registers.L = _state.registers.C;
                     break;
                 case 0x6a://movl,d
-                    _state.L = _state.D;
+                    _state.registers.L = _state.registers.D;
                     break;
                 case 0x6b://movl,e
-                    _state.L = _state.E;
+                    _state.registers.L = _state.registers.E;
                     break;
                 case 0x6c://movl,h
-                    _state.L = _state.H;
+                    _state.registers.L = _state.registers.H;
                     break;
                 case 0x6d://movl,l
-                    _state.L = _state.L;
+                    _state.registers.L = _state.registers.L;
                     break;
                 case 0x6e://movl,m
-                    _state.L = _state.M;
+                    _state.registers.L = _state.M;
                     break;
                 case 0x6f://movl,a
-                    _state.L = _state.A;
+                    _state.registers.L = _state.registers.A;
                     break;
                 case 0x70://movm,b
-                    _state.M = _state.B;
+                    _state.M = _state.registers.B;
                     break;
                 case 0x71://movm,c
-                    _state.M = _state.C;
+                    _state.M = _state.registers.C;
                     break;
                 case 0x72://movm,d
-                    _state.M = _state.D;
+                    _state.M = _state.registers.D;
                     break;
                 case 0x73://movm,e
-                    _state.M = _state.E;
+                    _state.M = _state.registers.E;
                     break;
                 case 0x74://movm,h
-                    _state.M = _state.H;
+                    _state.M = _state.registers.H;
                     break;
                 case 0x75://movm,l
-                    _state.M = _state.L;
+                    _state.M = _state.registers.L;
                     break;
                 case 0x76://hlt
                     halt.Invoke();
                     break;
                 case 0x77://movm,a
-                    _state.M = _state.A;
+                    _state.M = _state.registers.A;
                     break;
                 case 0x78://mova,b
-                    _state.A = _state.B;
+                    _state.registers.A = _state.registers.B;
                     break;
                 case 0x79://mova,c
-                    _state.A = _state.C;
+                    _state.registers.A = _state.registers.C;
                     break;
                 case 0x7a://mova,d
-                    _state.A = _state.D;
+                    _state.registers.A = _state.registers.D;
                     break;
                 case 0x7b://mova,e
-                    _state.A = _state.E;
+                    _state.registers.A = _state.registers.E;
                     break;
                 case 0x7c://mova,h
-                    _state.A = _state.H;
+                    _state.registers.A = _state.registers.H;
                     break;
                 case 0x7d://mova,l
-                    _state.A = _state.L;
+                    _state.registers.A = _state.registers.L;
                     break;
                 case 0x7e://mova,m
-                    _state.A = _state.M;
+                    _state.registers.A = _state.M;
                     break;
                 case 0x7f://mova,a
-                    _state.A = _state.A;
+                    _state.registers.A = _state.registers.A;
                     break;
                 case 0x80://addb
-                    _state.A = AddByte(_state.A, _state.B, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.B, false);
                     break;
                 case 0x81://addc
-                    _state.A = AddByte(_state.A, _state.C, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.C, false);
                     break;
                 case 0x82://addd
-                    _state.A = AddByte(_state.A, _state.D, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.D, false);
                     break;
                 case 0x83://adde
-                    _state.A = AddByte(_state.A, _state.E, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.E, false);
                     break;
                 case 0x84://addh
-                    _state.A = AddByte(_state.A, _state.H, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.H, false);
                     break;
                 case 0x85://addl
-                    _state.A = AddByte(_state.A, _state.L, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.L, false);
                     break;
                 case 0x86://addm
-                    _state.A = AddByte(_state.A, _state.M, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.M, false);
                     break;
                 case 0x87://adda
-                    _state.A = AddByte(_state.A, _state.A, false);
+                    _state.registers.A = AddByte(_state.registers.A, _state.registers.A, false);
                     break;
                 case 0x88://adcb
-                    _state.A = AddByteWithCarry(_state.A, _state.B, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.B, false);
                     break;
                 case 0x89://adcc
-                    _state.A = AddByteWithCarry(_state.A, _state.C, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.C, false);
                     break;
                 case 0x8a://adcd
-                    _state.A = AddByteWithCarry(_state.A, _state.D, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.D, false);
                     break;
                 case 0x8b://adce
-                    _state.A = AddByteWithCarry(_state.A, _state.E, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.E, false);
                     break;
                 case 0x8c://adch
-                    _state.A = AddByteWithCarry(_state.A, _state.H, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.H, false);
                     break;
                 case 0x8d://adcl
-                    _state.A = AddByteWithCarry(_state.A, _state.L, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.L, false);
                     break;
                 case 0x8e://adcm
-                    _state.A = AddByteWithCarry(_state.A, _state.M, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.M, false);
                     break;
                 case 0x8f://adca
-                    _state.A = AddByteWithCarry(_state.A, _state.A, false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.registers.A, false);
                     break;
                 case 0x90://subb
-                    _state.A = SubtractByte(_state.A, _state.B, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.B, false);
                     break;
                 case 0x91://subc
-                    _state.A = SubtractByte(_state.A, _state.C, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.C, false);
                     break;
                 case 0x92://subd
-                    _state.A = SubtractByte(_state.A, _state.D, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.D, false);
                     break;
                 case 0x93://sube
-                    _state.A = SubtractByte(_state.A, _state.E, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.E, false);
                     break;
                 case 0x94://subh
-                    _state.A = SubtractByte(_state.A, _state.H, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.H, false);
                     break;
                 case 0x95://subl
-                    _state.A = SubtractByte(_state.A, _state.L, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.L, false);
                     break;
                 case 0x96://subm
-                    _state.A = SubtractByte(_state.A, _state.M, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.M, false);
                     break;
                 case 0x97://suba
-                    _state.A = SubtractByte(_state.A, _state.A, false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.registers.A, false);
                     break;
                 case 0x98://sbbb
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.B, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.B, false);
                     break;
                 case 0x99://sbbc
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.C, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.C, false);
                     break;
                 case 0x9a://sbbd
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.D, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.D, false);
                     break;
                 case 0x9b://sbbe
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.E, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.E, false);
                     break;
                 case 0x9c://sbbh
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.H, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.H, false);
                     break;
                 case 0x9d://sbbl
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.L, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.L, false);
                     break;
                 case 0x9e://sbbm
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.M, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.M, false);
                     break;
                 case 0x9f://sbba
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.A, false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.registers.A, false);
                     break;
                 case 0xa0://anab
-                    _state.A = (byte)(_state.A & _state.B);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.B);
                     LogicalOpFlags();
                     break;
                 case 0xa1://anac
-                    _state.A = (byte)(_state.A & _state.C);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.C);
                     LogicalOpFlags();
                     break;
                 case 0xa2://anad
-                    _state.A = (byte)(_state.A & _state.D);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.D);
                     LogicalOpFlags();
                     break;
                 case 0xa3://anae
-                    _state.A = (byte)(_state.A & _state.E);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.E);
                     LogicalOpFlags();
                     break;
                 case 0xa4://anah
-                    _state.A = (byte)(_state.A & _state.H);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.H);
                     LogicalOpFlags();
                     break;
                 case 0xa5://anal
-                    _state.A = (byte)(_state.A & _state.L);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.L);
                     LogicalOpFlags();
                     break;
                 case 0xa6://anam
-                    _state.A = (byte)(_state.A & _state.M);
+                    _state.registers.A = (byte)(_state.registers.A & _state.M);
                     LogicalOpFlags();
                     break;
                 case 0xa7://anaa
-                    _state.A = (byte)(_state.A & _state.A);
+                    _state.registers.A = (byte)(_state.registers.A & _state.registers.A);
                     LogicalOpFlags();
                     break;
                 case 0xa8://xrab
-                    _state.A = (byte)(_state.A ^ _state.B);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.B);
                     LogicalOpFlags();
                     break;
                 case 0xa9://xrac
-                    _state.A = (byte)(_state.A ^ _state.C);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.C);
                     LogicalOpFlags();
                     break;
                 case 0xaa://xrad
-                    _state.A = (byte)(_state.A ^ _state.D);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.D);
                     LogicalOpFlags();
                     break;
                 case 0xab://xrae
-                    _state.A = (byte)(_state.A ^ _state.E);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.E);
                     LogicalOpFlags();
                     break;
                 case 0xac://xrah
-                    _state.A = (byte)(_state.A ^ _state.H);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.H);
                     LogicalOpFlags();
                     break;
                 case 0xad://xral
-                    _state.A = (byte)(_state.A ^ _state.L);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.L);
                     LogicalOpFlags();
                     break;
                 case 0xae://xram
-                    _state.A = (byte)(_state.A ^ _state.M);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.M);
                     LogicalOpFlags();
                     break;
                 case 0xaf://xraa
-                    _state.A = (byte)(_state.A ^ _state.A);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.registers.A);
                     LogicalOpFlags();
                     break;
                 case 0xb0://orab
-                    _state.A = (byte)(_state.A | _state.B);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.B);
                     LogicalOpFlags();
                     break;
                 case 0xb1://orac
-                    _state.A = (byte)(_state.A | _state.C);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.C);
                     LogicalOpFlags();
                     break;
                 case 0xb2://orad
-                    _state.A = (byte)(_state.A | _state.D);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.D);
                     LogicalOpFlags();
                     break;
                 case 0xb3://orae
-                    _state.A = (byte)(_state.A | _state.E);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.E);
                     LogicalOpFlags();
                     break;
                 case 0xb4://orah
-                    _state.A = (byte)(_state.A | _state.H);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.H);
                     LogicalOpFlags();
                     break;
                 case 0xb5://oral
-                    _state.A = (byte)(_state.A | _state.L);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.L);
                     LogicalOpFlags();
                     break;
                 case 0xb6://oram
-                    _state.A = (byte)(_state.A | _state.M);
+                    _state.registers.A = (byte)(_state.registers.A | _state.M);
                     LogicalOpFlags();
                     break;
                 case 0xb7://oraa
-                    _state.A = (byte)(_state.A | _state.A);
+                    _state.registers.A = (byte)(_state.registers.A | _state.registers.A);
                     LogicalOpFlags();
                     break;
                 case 0xb8://cmpb
-                    SubtractByte(_state.A, _state.B, false);
+                    SubtractByte(_state.registers.A, _state.registers.B, false);
                     break;
                 case 0xb9://cmpc
-                    SubtractByte(_state.A, _state.C, false);
+                    SubtractByte(_state.registers.A, _state.registers.C, false);
                     break;
                 case 0xba://cmpd
-                    SubtractByte(_state.A, _state.D, false);
+                    SubtractByte(_state.registers.A, _state.registers.D, false);
                     break;
                 case 0xbb://cmpe
-                    SubtractByte(_state.A, _state.E, false);
+                    SubtractByte(_state.registers.A, _state.registers.E, false);
                     break;
                 case 0xbc://cmph
-                    SubtractByte(_state.A, _state.H, false);
+                    SubtractByte(_state.registers.A, _state.registers.H, false);
                     break;
                 case 0xbd://cmpl
-                    SubtractByte(_state.A, _state.L, false);
+                    SubtractByte(_state.registers.A, _state.registers.L, false);
                     break;
                 case 0xbe://cmpm
-                    SubtractByte(_state.A, _state.M, false);
+                    SubtractByte(_state.registers.A, _state.M, false);
                     break;
                 case 0xbf://cmpa
-                    SubtractByte(_state.A, _state.A, false);
+                    SubtractByte(_state.registers.A, _state.registers.A, false);
                     break;
                 case 0xc0://rnz
-                    if(!_state.Z)
+                    if(!_state.flags.Z)
                     {
                         _state.PC = PopFromStack();
                     }
                     break;
                 case 0xc1://popb
-                    _state.BC = PopFromStack();
+                    _state.registers.BC = PopFromStack();
                     break;
                 case 0xc2://jnz
-                    if (!_state.Z)
+                    if (!_state.flags.Z)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
@@ -718,7 +718,7 @@ namespace AssemblerSimulator8085
                     _state.PC = GetNextTwoBytes();
                     break;
                 case 0xc4://cnz
-                    if(!_state.Z)
+                    if(!_state.flags.Z)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -729,31 +729,33 @@ namespace AssemblerSimulator8085
                     }
                     break;
                 case 0xc5://pushb
-                    PushToStack(_state.BC);
+                    PushToStack(_state.registers.BC);
                     break;
                 case 0xc6://adi
                     _state.PC++;
-                    _state.A = AddByteWithCarry(_state.A, _state.Memory[_state.PC], false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xc7://rst0
+                    _state.PC = 0x0000;
                     break;
                 case 0xc8://rz
-                    if (_state.Z)
+                    if (_state.flags.Z)
                         _state.PC = PopFromStack();
                     break;
                 case 0xc9://ret
                     _state.PC = PopFromStack();
                     break;
                 case 0xca://jz
-                    if (_state.Z)
+                    if (_state.flags.Z)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
                     break;
                 case 0xcb://no inst
+                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xcc://cz
-                    if (_state.Z)
+                    if (_state.flags.Z)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -767,27 +769,30 @@ namespace AssemblerSimulator8085
                     break;
                 case 0xce://aci
                     _state.PC++;
-                    _state.A = AddByteWithCarry(_state.A, _state.Memory[_state.PC], false);
+                    _state.registers.A = AddByteWithCarry(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xcf://rst1
+                    _state.PC = 0x0008;
                     break;
                 case 0xd0://rnc
-                    if (!_state.CY)
+                    if (!_state.flags.CY)
                         _state.PC = PopFromStack();
                     break;
                 case 0xd1://popd
-                    _state.DE = PopFromStack();
+                    _state.registers.DE = PopFromStack();
                     break;
                 case 0xd2://jnc
-                    if (!_state.CY)
+                    if (!_state.flags.CY)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
                     break;
                 case 0xd3://out
+                    _state.PC++;
+                    _state.IO[_state.Memory[_state.PC]] = _state.registers.A;
                     break;
                 case 0xd4://cnc
-                    if (!_state.CY)
+                    if (!_state.flags.CY)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -796,31 +801,34 @@ namespace AssemblerSimulator8085
                         _state.PC += 2;
                     break;
                 case 0xd5://pushd
-                    PushToStack(_state.DE);
+                    PushToStack(_state.registers.DE);
                     break;
                 case 0xd6://sui
                     _state.PC++;
-                    _state.A = SubtractByte(_state.A, _state.Memory[_state.PC], false);
+                    _state.registers.A = SubtractByte(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xd7://rst2
+                    _state.PC = 0x0010;
                     break;
                 case 0xd8://rc
-                    if(_state.CY)
+                    if(_state.flags.CY)
                         _state.PC = PopFromStack();
                     break;
                 case 0xd9://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xda://jc
-                    if (_state.CY)
+                    if (_state.flags.CY)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
                     break;
                 case 0xdb://in
+                    _state.PC++;
+                    _state.registers.A = _state.IO[_state.Memory[_state.PC]];
                     break;
                 case 0xdc://cc
-                    if (_state.CY)
+                    if (_state.flags.CY)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -833,32 +841,33 @@ namespace AssemblerSimulator8085
                     break;
                 case 0xde://sbi
                     _state.PC++;
-                    _state.A = SubtractByteWithBorrow(_state.A, _state.Memory[_state.PC], false);
+                    _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xdf://rst3
+                    _state.PC = 0x0018;
                     break;
                 case 0xe0://rpo
-                    if (_state.P == false)
+                    if (_state.flags.P == false)
                         _state.PC = PopFromStack();
                     break;
                 case 0xe1://poph
-                    _state.HL = PopFromStack();
+                    _state.registers.HL = PopFromStack();
                     break;
                 case 0xe2://jpo
-                    if (_state.P == false)
+                    if (_state.flags.P == false)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
                     break;
                 case 0xe3://xthl
                     {
-                        ushort temp = _state.HL;
-                        _state.HL = _state.SP;
+                        ushort temp = _state.registers.HL;
+                        _state.registers.HL = _state.SP;
                         _state.SP = temp;
                     }
                     break;
                 case 0xe4://cpo
-                    if (_state.P == false)
+                    if (_state.flags.P == false)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -867,24 +876,25 @@ namespace AssemblerSimulator8085
                         _state.PC += 2;
                     break;
                 case 0xe5://pushh
-                    PushToStack(_state.HL);
+                    PushToStack(_state.registers.HL);
                     break;
                 case 0xe6://ani
                     _state.PC++;
-                    _state.A = (byte)(_state.A & _state.Memory[_state.PC]);
+                    _state.registers.A = (byte)(_state.registers.A & _state.Memory[_state.PC]);
                     LogicalOpFlags();
                     break;
                 case 0xe7://rst 4
+                    _state.PC = 0x0020;
                     break;
                 case 0xe8://rpe
-                    if(_state.P==true)
+                    if(_state.flags.P==true)
                         _state.PC = PopFromStack();
                     break;
                 case 0xe9://pchl
-                    _state.PC = _state.HL;
+                    _state.PC = _state.registers.HL;
                     break;
                 case 0xea://jpe
-                    if (_state.P == true)
+                    if (_state.flags.P == true)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
@@ -892,13 +902,13 @@ namespace AssemblerSimulator8085
                 case 0xeb://xchg
                     {
                         ushort temp;
-                        temp = _state.HL;
-                        _state.HL = _state.DE;
-                        _state.DE = temp;
+                        temp = _state.registers.HL;
+                        _state.registers.HL = _state.registers.DE;
+                        _state.registers.DE = temp;
                     }
                     break;
                 case 0xec://cpe
-                    if (_state.P == true)
+                    if (_state.flags.P == true)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -911,20 +921,21 @@ namespace AssemblerSimulator8085
                     break;
                 case 0xee://xri
                     _state.PC++;
-                    _state.A = (byte)(_state.A ^ _state.Memory[_state.PC]);
+                    _state.registers.A = (byte)(_state.registers.A ^ _state.Memory[_state.PC]);
                     LogicalOpFlags();
                     break;
                 case 0xef://rst 5
+                    _state.PC = 0x0028;
                     break;
                 case 0xf0://RP
-                    if (_state.S==false)
+                    if (_state.flags.S==false)
                         _state.PC = PopFromStack();
                     break;
                 case 0xf1://poppsw
                     _state.PSW = PopFromStack();
                     break;
                 case 0xf2://jp
-                    if (_state.S == false)
+                    if (_state.flags.S == false)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
@@ -932,7 +943,7 @@ namespace AssemblerSimulator8085
                 case 0xf3://di
                     break;
                 case 0xf4://cp
-                    if (_state.S == false)
+                    if (_state.flags.S == false)
                     {
                         PushToStack(_state.PC);
                     }
@@ -944,20 +955,21 @@ namespace AssemblerSimulator8085
                     break;
                 case 0xf6://ori
                     _state.PC++;
-                    _state.A = (byte)(_state.A | _state.Memory[_state.PC]);
+                    _state.registers.A = (byte)(_state.registers.A | _state.Memory[_state.PC]);
                     LogicalOpFlags();
                     break;
                 case 0xf7://rst6
+                    _state.PC = 0x0030;
                     break;
                 case 0xf8://rm
-                    if (_state.S)
+                    if (_state.flags.S)
                         _state.PC = PopFromStack();
                     break;
                 case 0xf9://sphl
-                    _state.SP = _state.HL;
+                    _state.SP = _state.registers.HL;
                     break;
                 case 0xfa://jm
-                    if (_state.S)
+                    if (_state.flags.S)
                         _state.PC = GetNextTwoBytes();
                     else
                         _state.PC += 2;
@@ -965,7 +977,7 @@ namespace AssemblerSimulator8085
                 case 0xfb://ei
                     break;
                 case 0xfc://cm
-                    if (_state.S)
+                    if (_state.flags.S)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
@@ -978,26 +990,53 @@ namespace AssemblerSimulator8085
                     break;
                 case 0xfe://cpi
                     _state.PC++;
-                    SubtractByteWithBorrow(_state.A, _state.Memory[_state.PC], false);
+                    SubtractByteWithBorrow(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xff://rst7
+                    _state.PC = 0x0038;
                     break;
             }
             _state.PC++;
+        }
+
+        public void Interrupt_TRAP()
+        {
+
+        }
+
+        public void Interrupt_RST7_5()
+        {
+
+        }
+
+        public void Interrupt_RST6_5()
+        {
+
+        }
+
+        public void Interrupt_RST5_5()
+        {
+
+        }
+
+        public void Interrupt_INTR()
+        {
+
         }
 
         private void PushToStack(ushort element)
         {
             _state.SP -= 2;
             byte[] temp = BitConverter.GetBytes(element);
-            _state.Memory[_state.SP + 1] = temp[0];
-            _state.Memory[_state.SP + 2] = temp[1];
+            _state.Memory[_state.SP] = temp[0];
+            _state.Memory[_state.SP + 1] = temp[1];
         }
 
         private ushort PopFromStack()
         {
+            var temp = BitConverter.ToUInt16(_state.Memory, (_state.SP));
             _state.SP += 2;
-            return BitConverter.ToUInt16(_state.Memory, _state.SP-2);
+            return temp;
         }
 
         private static bool CheckParity(byte Reg)
@@ -1006,33 +1045,33 @@ namespace AssemblerSimulator8085
             int temp = Reg;
             for (int i = 0; i < 8; i++)
             {
-                if (temp % 2 == 0)
+                if ((temp & 1) == 1)
                 {
                     count++;
                     temp = temp >> 1;
                 }
             }
-            return (count % 2 == 0);
+            return ((count & 1) == 0);
         }
 
         private void LogicalOpFlags()
         {
-            _state.CY = false;
-            _state.AC = false;
-            _state.Z = (_state.A == 0);
-            _state.S = (_state.A / 128 == 1);
-            _state.P = CheckParity(_state.A);
+            _state.flags.CY = false;
+            _state.flags.AC = false;
+            _state.flags.Z = (_state.registers.A == 0);
+            _state.flags.S = (_state.registers.A / 128 == 1);
+            _state.flags.P = CheckParity(_state.registers.A);
         }
 
         private void ArithmeticOpFlags(ushort result, bool keep_carry)
         {
             var temp = BitConverter.GetBytes(result);
             if(!keep_carry)
-                _state.CY = (result > 0xff);
-            _state.AC = false;
-            _state.Z = (result == 0);
-            _state.S = (result / 128 == 1);
-            _state.P = CheckParity(temp[0]);
+                _state.flags.CY = (result > 0xff);
+            _state.flags.AC = false;
+            _state.flags.Z = (result == 0);
+            _state.flags.S = (result / 128 == 1);
+            _state.flags.P = CheckParity(temp[0]);
         }
 
         private byte AddByte(byte augend, byte addend, bool keep_carry)
@@ -1040,13 +1079,13 @@ namespace AssemblerSimulator8085
             ushort result = (ushort)(augend + addend);
             ArithmeticOpFlags(result, keep_carry);
             if ((augend & 0xf) + (addend & 0xf) > 0xf)
-                _state.AC = true;
+                _state.flags.AC = true;
             return (byte)result;
         }
 
         private byte AddByteWithCarry(byte augend, byte addend, bool keep_carry)
         {
-            ushort result = (ushort)(augend + addend + (_state.CY ? 1 : 0));
+            ushort result = (ushort)(augend + addend + (_state.flags.CY ? 1 : 0));
             ArithmeticOpFlags(result, keep_carry);
             return (byte)result;
         }
@@ -1056,13 +1095,13 @@ namespace AssemblerSimulator8085
             ushort result = (ushort)(minuend - subtrahend);
             ArithmeticOpFlags(result, keep_carry);
             if ((minuend & 0xf) + (~subtrahend & 0xf) + 1 > 0xf)
-                _state.AC = true;
+                _state.flags.AC = true;
             return (byte)result;
         }
 
         private byte SubtractByteWithBorrow(byte minuend, byte subtrahend, bool keep_carry)
         {
-            ushort result = (ushort)(minuend - subtrahend - (_state.CY ? 1 : 0));
+            ushort result = (ushort)(minuend - subtrahend - (_state.flags.CY ? 1 : 0));
             ArithmeticOpFlags(result, keep_carry);
             return (byte)result;
         }
