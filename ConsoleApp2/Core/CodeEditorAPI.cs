@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AssemblerSimulator8085.Assembler;
+using AssemblerSimulator8085.Simulator;
+using AssemblerSimulator8085.HelperExtensions;
 
-namespace AssemblerSimulator8085
+namespace AssemblerSimulator8085.Core
 {
     public class CodeEditorAPI
     {
@@ -12,9 +12,9 @@ namespace AssemblerSimulator8085
         Assembler8085 asm;
         Simulator8085 sim;
         int current_line = 1;
-        ushort? next_line_to_execute_address = null;//address at which the next line to execute is stored in 8085 memory
+        ushort? next_line_to_execute_address = null; //address at which the next line to execute is stored in 8085 memory
         Dictionary<int, ushort> code_addresses; //stores the address and line number of instructions
-        Dictionary<ushort, int> address_codes;//reverse code_addresses for lookup
+        Dictionary<ushort, int> address_codes; //reverse code_addresses for lookup
         bool continue_simulation = true;
         public CodeEditorAPI()
         {
@@ -27,12 +27,19 @@ namespace AssemblerSimulator8085
         }
         public void Assemble(string codelines, ushort load_at)
         {
-            st.Memory = asm.Assemble(codelines, load_at);
-            current_line = 1;
-            code_addresses = asm.code_addresses;
-            address_codes = code_addresses.SwapKeyValues();
-            next_line_to_execute_address = code_addresses[current_line];
-            continue_simulation = true;
+            var assembledProgram = asm.Assemble(codelines);
+            if(st.TryWriteToMemory(assembledProgram, 0, assembledProgram.Length, load_at))
+            {
+                current_line = 1;
+                code_addresses = asm.code_addresses;
+                address_codes = code_addresses.SwapKeyValues();
+                next_line_to_execute_address = code_addresses[current_line];
+                continue_simulation = true;
+            }
+            else
+            {
+                throw new Exception($"Program too large to be loaded at {load_at}");
+            }
         }
         public int SimulateNextLine()//returns current line after executing instruction
         {
@@ -61,7 +68,7 @@ namespace AssemblerSimulator8085
             }
             else
             {
-                throw new Exception("Program is writing into code buffer");
+                throw new Exception("Program is writing into code buffer area");
             }
             return current_line;
         }

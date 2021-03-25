@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace AssemblerSimulator8085
+namespace AssemblerSimulator8085.Assembler
 { 
     partial class Assembler8085
     {

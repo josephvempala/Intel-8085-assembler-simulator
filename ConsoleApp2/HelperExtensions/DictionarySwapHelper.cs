@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AssemblerSimulator8085
+namespace AssemblerSimulator8085.HelperExtensions
 {
     static class DictionarySwapHelper
     {

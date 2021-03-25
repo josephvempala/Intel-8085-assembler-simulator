@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace AssemblerSimulator8085
+namespace AssemblerSimulator8085.Assembler
 {
     internal partial class Assembler8085 
     {
@@ -115,10 +115,9 @@ namespace AssemblerSimulator8085
                 errors_list.Add(new AssembleError($"Not enough memory to add 3-byte instruction {match.Groups["2"].Value} to memory address {counter.ToString("X")}", line_number));
         }
         
-        public byte[] Assemble(string source, ushort load_at = 0) //Load into memory default = 0 //
+        public byte[] Assemble(string source)
         {
             ResetAssembler();
-            counter = load_at;
             var code_lines = Regex.Replace(source, @"( +?)|(;.*?$)", "", RegexOptions.IgnoreCase | RegexOptions.Multiline).ToUpper().Split("\n");
             foreach (var line in code_lines)
             {
@@ -145,7 +144,7 @@ namespace AssemblerSimulator8085
             }
             CheckForUnresolvedLabels();
             if (errors_list.Count is 0)
-                return temp_memory;
+                return temp_memory.AsMemory(0, counter).ToArray();
             else
                 return null;
         }

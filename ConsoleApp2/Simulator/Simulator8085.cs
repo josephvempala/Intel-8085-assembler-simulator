@@ -1,6 +1,7 @@
 ﻿using System;
+using AssemblerSimulator8085.Core;
 
-namespace AssemblerSimulator8085
+namespace AssemblerSimulator8085.Simulator
 {
     internal class Simulator8085
     {

@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using AssemblerSimulator8085;
+
 namespace Intel8085SimTests
 {
     public class Tests
@@ -6,7 +8,7 @@ namespace Intel8085SimTests
         [SetUp]
         public void Setup()
         {
-            Assembler
+            Assembler8085.
         }
 
         [Test]

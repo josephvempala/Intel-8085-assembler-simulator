@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
-namespace AssemblerSimulator8085
+[assembly: InternalsVisibleTo("Tests")]
+namespace AssemblerSimulator8085.Core
 {
     public class State8085
     {
@@ -181,8 +183,68 @@ namespace AssemblerSimulator8085
                 registers.A = temp[1];
             }
         }//Program Status Word
-        public byte[] IO { get; set; } = new byte[byte.MaxValue + 1]; //IO ports
-        public byte[] Memory { get; set; } = new byte[ushort.MaxValue + 1]; //16 bit memory
+        public byte[] IO { get; private set; } //IO ports
+        public byte[] Memory { get; private set; } //16 bit memory
         public byte M { get { return Memory[registers.HL]; } set { Memory[registers.HL] = value; } } //Memory pointed at by HL
+
+        public void ResetMemory()
+        {
+            Memory = new byte[ushort.MaxValue + 1];
+        }
+
+        public void ResetFlags()
+        {
+            flags = new Flags();
+        }
+
+        public void ResetIOPorts()
+        {
+            IO = new byte[byte.MaxValue + 1];
+        }
+
+        public void ResetInterrupts()
+        {
+            interruptMaskStatus = new InterruptMaskStatus();
+        }
+
+        public void ResetRegisters()
+        {
+            SP = 0;
+            PC = 0;
+            registers.A = 0;
+            registers.BC = 0;
+            registers.DE = 0;
+            registers.HL = 0;
+        }
+
+        public void ResetState()
+        {
+            ResetRegisters();
+            ResetFlags();
+            ResetInterrupts();
+            ResetIOPorts();
+            ResetMemory();
+        }
+
+        public bool TryWriteToMemory(byte[] buffer, int startIndex, int endIndex, int loadAt)
+        {
+            if (endIndex - startIndex < Memory.Length - loadAt)
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    Memory[loadAt+i] = buffer[i];
+                }
+            else
+                return false;
+            return true;
+        }
+
+        public State8085()
+        {
+            Memory = new byte[ushort.MaxValue + 1];
+            IO = new byte[byte.MaxValue + 1];
+            flags = new Flags();
+            registers = new Registers();
+            interruptMaskStatus = new InterruptMaskStatus();
+        }
     }
 }
