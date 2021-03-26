@@ -942,6 +942,7 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC += 2;
                     break;
                 case 0xf3://di
+                    _state.interruptMaskStatus.InterruptEnable = false;
                     break;
                 case 0xf4://cp
                     if (_state.flags.S == false)
@@ -976,6 +977,7 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC += 2;
                     break;
                 case 0xfb://ei
+                    _state.interruptMaskStatus.InterruptEnable = true;
                     break;
                 case 0xfc://cm
                     if (_state.flags.S)

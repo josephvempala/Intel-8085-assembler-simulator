@@ -160,10 +160,12 @@ namespace AssemblerSimulator8085.Core
         }
         public struct InterruptMaskStatus
         {
-            public bool InterruptEnable { get; set; }
-            public bool RST7_5 { get; set; }
-            public bool RST6_5 { get; set; }
-            public bool RST5_5 { get; set; }
+            public bool InterruptEnable { get; internal set; }
+            public bool RST7_5 { get; internal set; }
+            public bool RST6_5 { get; internal set; }
+            public bool RST5_5 { get; internal set; }
+            public bool INTR { get; internal set; }
+            public bool INTA { get; internal set; }
         }
         public Flags flags;
         public Registers registers;
@@ -232,6 +234,18 @@ namespace AssemblerSimulator8085.Core
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     Memory[loadAt+i] = buffer[i];
+                }
+            else
+                return false;
+            return true;
+        }
+
+        public bool TryWriteToIOPorts(byte[] buffer, int startIndex, int endIndex, int loadAt)
+        {
+            if (endIndex - startIndex < IO.Length - loadAt)
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    IO[loadAt + i] = buffer[i];
                 }
             else
                 return false;
