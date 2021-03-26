@@ -1,5 +1,6 @@
 ﻿using System;
 using AssemblerSimulator8085.Core;
+using AssemblerSimulator8085.HelperExtensions;
 
 namespace AssemblerSimulator8085.Simulator
 {
@@ -187,6 +188,33 @@ namespace AssemblerSimulator8085.Simulator
                     }
                     break;
                 case 0x20://rim
+                    {
+                        int temp=0;
+                        if (_state.serialIO == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.RST7_5Pending == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.RST6_5Pending == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.RST5_5Pending == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.InterruptEnable == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.RST7_5Enabled == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.RST6_5Enabled == true)
+                            temp += 1;
+                        temp = temp << 1;
+                        if (_state.interruptStatus.RST5_5Enabled == true)
+                            temp += 1;
+                        _state.registers.A = (byte)temp;
+                    }
                     break;
                 case 0x21://lxih
                     _state.registers.HL = GetNextTwoBytes();
@@ -239,8 +267,33 @@ namespace AssemblerSimulator8085.Simulator
                 case 0x2f://cma
                     _state.registers.A = (byte)~_state.registers.A;
                     break;
-                case 0x30://no_inst
-                    throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
+                case 0x30://sim
+                    {
+                        bool[] temp = _state.registers.A.GetBits();
+                        if(temp[6])//Serial Output Enable
+                        {
+                            _state.serialIO = temp[7];//Serial Output
+                        }
+                        if(temp[3])//Mask Set Enable
+                        {
+                            if (temp[2])//M7.5
+                                _state.interruptStatus.RST5_5Enabled = false;
+                            else
+                                _state.interruptStatus.RST5_5Enabled = true;
+                            if (temp[1])
+                                _state.interruptStatus.RST6_5Enabled = false;
+                            else
+                                _state.interruptStatus.RST6_5Enabled = true;
+                            if (temp[0])
+                                _state.interruptStatus.RST7_5Enabled = false;
+                            else
+                                _state.interruptStatus.RST7_5Enabled = true;
+                        }
+                        if(temp[4])
+                        {
+                            _state.interruptStatus.RST7_5Enabled = false;
+                        }
+                    }
                     break;
                 case 0x31://lxisp
                     _state.SP = GetNextTwoBytes();
@@ -942,7 +995,7 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC += 2;
                     break;
                 case 0xf3://di
-                    _state.interruptMaskStatus.InterruptEnable = false;
+                    _state.interruptStatus.InterruptEnable = false;
                     break;
                 case 0xf4://cp
                     if (_state.flags.S == false)
@@ -977,7 +1030,7 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC += 2;
                     break;
                 case 0xfb://ei
-                    _state.interruptMaskStatus.InterruptEnable = true;
+                    _state.interruptStatus.InterruptEnable = true;
                     break;
                 case 0xfc://cm
                     if (_state.flags.S)

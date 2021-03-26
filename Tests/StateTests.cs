@@ -30,10 +30,10 @@ namespace Tests
             state.registers.E = (byte)random.Next(byte.MinValue, byte.MaxValue);
             state.registers.H = (byte)random.Next(byte.MinValue, byte.MaxValue);
             state.registers.L = (byte)random.Next(byte.MinValue, byte.MaxValue);
-            state.interruptMaskStatus.InterruptEnable = true;
-            state.interruptMaskStatus.RST5_5 = true;
-            state.interruptMaskStatus.RST6_5 = true;
-            state.interruptMaskStatus.RST7_5 = true;
+            state.interruptStatus.InterruptEnable = true;
+            state.interruptStatus.RST5_5Enabled = true;
+            state.interruptStatus.RST6_5Enabled = true;
+            state.interruptStatus.RST7_5Enabled = true;
             state.flags.AC = true;
             state.flags.CY = true;
             state.flags.S = true;
@@ -55,10 +55,10 @@ namespace Tests
         public void ResetInterruptsTest()
         {
             state.ResetInterrupts();
-            Assert.IsFalse(state.interruptMaskStatus.InterruptEnable);
-            Assert.IsFalse(state.interruptMaskStatus.RST5_5);
-            Assert.IsFalse(state.interruptMaskStatus.RST6_5);
-            Assert.IsFalse(state.interruptMaskStatus.RST7_5);
+            Assert.IsFalse(state.interruptStatus.InterruptEnable);
+            Assert.IsFalse(state.interruptStatus.RST5_5Enabled);
+            Assert.IsFalse(state.interruptStatus.RST6_5Enabled);
+            Assert.IsFalse(state.interruptStatus.RST7_5Enabled);
         }
         [Test]
         public void ResetIOPortsTest()

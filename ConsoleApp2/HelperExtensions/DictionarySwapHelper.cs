@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AssemblerSimulator8085.HelperExtensions
 {
-    static class DictionarySwapHelper
+    internal static class DictionarySwapHelper
     {
         public static Dictionary<Y,X> SwapKeyValues<X,Y>(this Dictionary<X,Y> Dictionary)
         {

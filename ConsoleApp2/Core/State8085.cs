@@ -158,18 +158,22 @@ namespace AssemblerSimulator8085.Core
             public byte L { get; set; }
             public byte A { get; set; }
         }
-        public struct InterruptMaskStatus
+        public struct InterruptStatus
         {
             public bool InterruptEnable { get; internal set; }
-            public bool RST7_5 { get; internal set; }
-            public bool RST6_5 { get; internal set; }
-            public bool RST5_5 { get; internal set; }
-            public bool INTR { get; internal set; }
+            public bool RST7_5Enabled { get; internal set; }
+            public bool RST6_5Enabled { get; internal set; }
+            public bool RST5_5Enabled { get; internal set; }
+            public bool INTREnabled { get; internal set; }
+            public bool RST7_5Pending { get; internal set; }
+            public bool RST6_5Pending { get; internal set; }
+            public bool RST5_5Pending { get; internal set; }
             public bool INTA { get; internal set; }
         }
+        public bool serialIO { get; internal set; }
         public Flags flags;
         public Registers registers;
-        public InterruptMaskStatus interruptMaskStatus;
+        public InterruptStatus interruptStatus;
         public ushort SP { get; set; }//Stack Pointer
         public ushort PC { get; set; }//Program counter
         public ushort PSW
@@ -206,7 +210,7 @@ namespace AssemblerSimulator8085.Core
 
         public void ResetInterrupts()
         {
-            interruptMaskStatus = new InterruptMaskStatus();
+            interruptStatus = new InterruptStatus();
         }
 
         public void ResetRegisters()
@@ -258,7 +262,7 @@ namespace AssemblerSimulator8085.Core
             IO = new byte[byte.MaxValue + 1];
             flags = new Flags();
             registers = new Registers();
-            interruptMaskStatus = new InterruptMaskStatus();
+            interruptStatus = new InterruptStatus();
         }
     }
 }
