@@ -24,5 +24,18 @@ namespace AssemblerSimulator8085.HelperExtensions
             Array.Reverse(result);
             return result;
         }
+        public static byte GetByte(this bool[] boolArray)
+        {
+            byte result=0;
+            bool[] temp = boolArray.Reverse().ToArray();
+            for (int i = 0; i < 8; i++)
+            {
+                if(temp[i])
+                {
+                    result += (byte)Math.Pow(2, i);
+                }
+            }
+            return result;
+        }
     }
 }

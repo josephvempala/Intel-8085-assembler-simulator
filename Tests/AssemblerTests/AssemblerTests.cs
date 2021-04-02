@@ -3,8 +3,9 @@ using AssemblerSimulator8085.Assembler;
 using System.Collections.Generic;
 using System;
 
-namespace Tests
+namespace AssemblerTests
 {
+    [TestFixture]
     class AssemblerTests
     {
         Assembler8085 assembler = new Assembler8085();
@@ -14,7 +15,7 @@ namespace Tests
 
         }
         [Test]
-        public void BasicInstructionTests()
+        public void BasicInstruction()
         {
             List<string> correctTestInstructions = new List<string>()
             {
@@ -33,7 +34,7 @@ namespace Tests
                 Assert.IsNotNull(i);
         }
         [Test]
-        public void BasicProgramTest()
+        public void BasicProgram()
         {
             string TestProgram = "MVI B, 00H\n MVI C, 08H\n MOV A, D\n BACK: RAR\n JNC SKIP\n INR B\n SKIP: DCR C\n JNZ BACK\n HLT ";
             var result = assembler.Assemble(TestProgram);

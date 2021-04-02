@@ -20,11 +20,11 @@ namespace AssemblerSimulator8085.Core
                 }
                 set
                 {
-                    if (value)
+                    if (value is true & value != cy)
                     {
                         flagreg += 1;
                     }
-                    else
+                    else if(value is not true & value != cy)
                     {
                         flagreg -= 1;
                     }
@@ -39,11 +39,11 @@ namespace AssemblerSimulator8085.Core
                 }
                 set
                 {
-                    if (value)
+                    if (value is true & value != p)
                     {
                         flagreg += 4;
                     }
-                    else
+                    else if (value is not true & value != p)
                     {
                         flagreg -= 4;
                     }
@@ -58,11 +58,11 @@ namespace AssemblerSimulator8085.Core
                 }
                 set
                 {
-                    if (value)
+                    if (value is true & value != ac)
                     {
                         flagreg += 16;
                     }
-                    else
+                    else if (value is not true & value != ac)
                     {
                         flagreg -= 16;
                     }
@@ -78,11 +78,11 @@ namespace AssemblerSimulator8085.Core
                 }
                 set
                 {
-                    if (value)
+                    if (value is true & value != z)
                     {
                         flagreg += 64;
                     }
-                    else
+                    else if (value is not true & value != z)
                     {
                         flagreg -= 64;
                     }
@@ -97,11 +97,11 @@ namespace AssemblerSimulator8085.Core
                 }
                 set
                 {
-                    if (value)
+                    if (value is true & value != s)
                     {
                         flagreg += 128;
                     }
-                    else
+                    else if (value is not true & value != s)
                     {
                         flagreg -= 128;
                     }
@@ -120,8 +120,8 @@ namespace AssemblerSimulator8085.Core
                 set
                 {
                     byte[] temp = BitConverter.GetBytes(value);
-                    B = temp[0];
-                    C = temp[1];
+                    B = temp[1];
+                    C = temp[0];
                 }
             }//BC Register Pair
             public ushort DE
@@ -133,8 +133,8 @@ namespace AssemblerSimulator8085.Core
                 set
                 {
                     byte[] temp = BitConverter.GetBytes(value);
-                    D = temp[0];
-                    E = temp[1];
+                    D = temp[1];
+                    E = temp[0];
                 }
             }//DE Register Pair
             public ushort HL
@@ -146,8 +146,8 @@ namespace AssemblerSimulator8085.Core
                 set
                 {
                     byte[] temp = BitConverter.GetBytes(value);
-                    H = temp[0];
-                    L = temp[1];
+                    H = temp[1];
+                    L = temp[0];
                 }
             }//HL Register Pair
             public byte B { get; set; }

@@ -3,8 +3,9 @@ using AssemblerSimulator8085.Core;
 using System.Linq;
 using System;
 
-namespace Tests
+namespace StateTests
 {
+    [TestFixture]
     public class StateTests
     {
         State8085 state = new State8085();
@@ -40,9 +41,13 @@ namespace Tests
             state.flags.Z = true;
             state.flags.P = true;
         }
-
+        [TearDown]
+        public void TearDown()
+        {
+            state.ResetState();
+        }
         [Test]
-        public void ResetFlagsTest()
+        public void ResetFlags()
         {
             state.ResetFlags();
             Assert.IsFalse(state.flags.AC);
@@ -52,7 +57,7 @@ namespace Tests
             Assert.IsFalse(state.flags.P);
         }
         [Test]
-        public void ResetInterruptsTest()
+        public void ResetInterrupts()
         {
             state.ResetInterrupts();
             Assert.IsFalse(state.interruptStatus.InterruptEnable);
@@ -61,7 +66,7 @@ namespace Tests
             Assert.IsFalse(state.interruptStatus.RST7_5Enabled);
         }
         [Test]
-        public void ResetIOPortsTest()
+        public void ResetIOPorts()
         {
             state.ResetIOPorts();
             foreach(var i in state.IO)
@@ -70,7 +75,7 @@ namespace Tests
             }
         }
         [Test]
-        public void ResetMemoryTest()
+        public void ResetMemory()
         {
             state.ResetMemory();
             foreach (var i in state.Memory)
@@ -93,7 +98,7 @@ namespace Tests
             Assert.AreEqual(0, state.registers.L);
         }
         [Test]
-        public void WriteToMemoryTest()
+        public void WriteToMemory()
         {
             state.ResetMemory();
             byte[] bytes = new byte[400];

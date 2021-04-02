@@ -57,7 +57,7 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.B = _state.Memory[_state.PC];
                     break;
                 case 0x7://rlc
-                    if(_state.registers.A>0x80)
+                    if (_state.registers.A > 0x80)
                     {
                         _state.registers.A = (byte)(_state.registers.A << 1);
                         _state.registers.A++;
@@ -91,7 +91,7 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.C = _state.Memory[_state.PC];
                     break;
                 case 0xf://rrc
-                    if(_state.registers.A % 2 == 0)
+                    if (_state.registers.A % 2 == 0)
                     {
                         _state.registers.A = (byte)(_state.registers.A >> 1);
                     }
@@ -125,7 +125,7 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.D = _state.Memory[_state.PC];
                     break;
                 case 0x17://ral
-                    if(_state.flags.CY)
+                    if (_state.flags.CY)
                     {
                         _state.registers.A = (byte)(_state.registers.A << 1);
                         _state.registers.A++;
@@ -160,9 +160,9 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.E = _state.Memory[_state.PC];
                     break;
                 case 0x1f://rar
-                    if(_state.flags.CY)//refactor
+                    if (_state.flags.CY)//refactor
                     {
-                        if(_state.registers.A%2==0)
+                        if (_state.registers.A % 2 == 0)
                         {
                             _state.registers.A = (byte)(_state.registers.A >> 1);
                             _state.registers.A += 0x80;
@@ -176,7 +176,7 @@ namespace AssemblerSimulator8085.Simulator
                     }
                     else
                     {
-                        if(_state.registers.A%2==0)
+                        if (_state.registers.A % 2 == 0)
                         {
                             _state.registers.A = (byte)(_state.registers.A >> 1);
                         }
@@ -189,7 +189,7 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0x20://rim
                     {
-                        int temp=0;
+                        int temp = 0;
                         if (_state.serialIO == true)
                             temp += 1;
                         temp = temp << 1;
@@ -221,10 +221,11 @@ namespace AssemblerSimulator8085.Simulator
                     _state.PC += 2;
                     break;
                 case 0x22://shld
-                    _state.PC++;
-                    _state.Memory[_state.PC] = _state.registers.L;
-                    _state.PC++;
-                    _state.Memory[_state.PC] = _state.registers.H;
+                    {
+                        ushort address = GetNextTwoBytes();
+                        _state.Memory[address] = _state.registers.L;
+                        _state.Memory[address + 1] = _state.registers.H;
+                    }
                     break;
                 case 0x23://inxh
                     _state.registers.HL++;
@@ -240,7 +241,17 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.H = _state.Memory[_state.PC];
                     break;
                 case 0x27://daa
-
+                    {
+                        if ((_state.registers.A & 0xf) > 9 || _state.flags.AC)
+                        {
+                            _state.registers.A = AddByteWithCarry(_state.registers.A, 0x6, false);
+                            _state.flags.AC = true;
+                        }
+                        if ((_state.registers.A & 0xf0) >> 4 > 9 || _state.flags.CY)
+                        {
+                            _state.registers.A = AddByteWithCarry(_state.registers.A, 0x60, false);
+                        }
+                    }
                     break;
                 case 0x28://no-inst
                     break;
@@ -270,11 +281,11 @@ namespace AssemblerSimulator8085.Simulator
                 case 0x30://sim
                     {
                         bool[] temp = _state.registers.A.GetBits();
-                        if(temp[6])//Serial Output Enable
+                        if (temp[6])//Serial Output Enable
                         {
                             _state.serialIO = temp[7];//Serial Output
                         }
-                        if(temp[3])//Mask Set Enable
+                        if (temp[3])//Mask Set Enable
                         {
                             if (temp[2])//M7.5
                                 _state.interruptStatus.RST5_5Enabled = false;
@@ -289,7 +300,7 @@ namespace AssemblerSimulator8085.Simulator
                             else
                                 _state.interruptStatus.RST7_5Enabled = true;
                         }
-                        if(temp[4])
+                        if (temp[4])
                         {
                             _state.interruptStatus.RST7_5Enabled = false;
                         }
@@ -754,9 +765,10 @@ namespace AssemblerSimulator8085.Simulator
                     SubtractByte(_state.registers.A, _state.registers.A, false);
                     break;
                 case 0xc0://rnz
-                    if(!_state.flags.Z)
+                    if (!_state.flags.Z)
                     {
                         _state.PC = PopFromStack();
+                        return;
                     }
                     break;
                 case 0xc1://popb
@@ -764,18 +776,25 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0xc2://jnz
                     if (!_state.flags.Z)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
                 case 0xc3://jmp
-                    _state.PC = GetNextTwoBytes();
+                    {
+                        _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     break;
                 case 0xc4://cnz
-                    if(!_state.flags.Z)
+                    if (!_state.flags.Z)
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                     {
@@ -790,18 +809,28 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.A = AddByteWithCarry(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xc7://rst0
-                    _state.PC = 0x0000;
+                    {
+                        _state.PC = 0x0000;
+                        return;
+                    }
                     break;
                 case 0xc8://rz
                     if (_state.flags.Z)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xc9://ret
                     _state.PC = PopFromStack();
+                    return;
                     break;
                 case 0xca://jz
                     if (_state.flags.Z)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -813,6 +842,7 @@ namespace AssemblerSimulator8085.Simulator
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                         _state.PC += 2;
@@ -820,24 +850,34 @@ namespace AssemblerSimulator8085.Simulator
                 case 0xcd://call
                     PushToStack(_state.PC);
                     _state.PC = GetNextTwoBytes();
+                    return;
                     break;
                 case 0xce://aci
                     _state.PC++;
                     _state.registers.A = AddByteWithCarry(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xcf://rst1
-                    _state.PC = 0x0008;
+                    {
+                        _state.PC = 0x0008;
+                        return;
+                    }
                     break;
                 case 0xd0://rnc
                     if (!_state.flags.CY)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xd1://popd
                     _state.registers.DE = PopFromStack();
                     break;
                 case 0xd2://jnc
                     if (!_state.flags.CY)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -850,6 +890,7 @@ namespace AssemblerSimulator8085.Simulator
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                         _state.PC += 2;
@@ -862,18 +903,27 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.A = SubtractByte(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xd7://rst2
-                    _state.PC = 0x0010;
+                    {
+                        _state.PC = 0x0010;
+                        return;
+                    }
                     break;
                 case 0xd8://rc
-                    if(_state.flags.CY)
+                    if (_state.flags.CY)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xd9://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
                     break;
                 case 0xda://jc
                     if (_state.flags.CY)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -886,6 +936,7 @@ namespace AssemblerSimulator8085.Simulator
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                         _state.PC += 2;
@@ -898,18 +949,27 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xdf://rst3
-                    _state.PC = 0x0018;
+                    {
+                        _state.PC = 0x0018;
+                        return;
+                    }
                     break;
                 case 0xe0://rpo
                     if (_state.flags.P == false)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xe1://poph
                     _state.registers.HL = PopFromStack();
                     break;
                 case 0xe2://jpo
                     if (_state.flags.P == false)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -925,6 +985,7 @@ namespace AssemblerSimulator8085.Simulator
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                         _state.PC += 2;
@@ -938,18 +999,27 @@ namespace AssemblerSimulator8085.Simulator
                     LogicalOpFlags();
                     break;
                 case 0xe7://rst 4
-                    _state.PC = 0x0020;
+                    {
+                        _state.PC = 0x0020;
+                        return;
+                    }
                     break;
                 case 0xe8://rpe
-                    if(_state.flags.P==true)
+                    if (_state.flags.P == true)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xe9://pchl
                     _state.PC = _state.registers.HL;
                     break;
                 case 0xea://jpe
                     if (_state.flags.P == true)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -966,6 +1036,7 @@ namespace AssemblerSimulator8085.Simulator
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                         _state.PC += 2;
@@ -979,18 +1050,27 @@ namespace AssemblerSimulator8085.Simulator
                     LogicalOpFlags();
                     break;
                 case 0xef://rst 5
-                    _state.PC = 0x0028;
+                    {
+                        _state.PC = 0x0028;
+                        return;
+                    }
                     break;
                 case 0xf0://RP
-                    if (_state.flags.S==false)
+                    if (_state.flags.S == false)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xf1://poppsw
                     _state.PSW = PopFromStack();
                     break;
                 case 0xf2://jp
                     if (_state.flags.S == false)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -1014,18 +1094,27 @@ namespace AssemblerSimulator8085.Simulator
                     LogicalOpFlags();
                     break;
                 case 0xf7://rst6
-                    _state.PC = 0x0030;
+                    {
+                        _state.PC = 0x0030;
+                        return;
+                    }
                     break;
                 case 0xf8://rm
                     if (_state.flags.S)
+                    {
                         _state.PC = PopFromStack();
+                        return;
+                    }
                     break;
                 case 0xf9://sphl
                     _state.SP = _state.registers.HL;
                     break;
                 case 0xfa://jm
                     if (_state.flags.S)
+                    {
                         _state.PC = GetNextTwoBytes();
+                        return;
+                    }
                     else
                         _state.PC += 2;
                     break;
@@ -1037,6 +1126,7 @@ namespace AssemblerSimulator8085.Simulator
                     {
                         PushToStack(_state.PC);
                         _state.PC = GetNextTwoBytes();
+                        return;
                     }
                     else
                         _state.PC += 2;
@@ -1049,7 +1139,10 @@ namespace AssemblerSimulator8085.Simulator
                     SubtractByteWithBorrow(_state.registers.A, _state.Memory[_state.PC], false);
                     break;
                 case 0xff://rst7
-                    _state.PC = 0x0038;
+                    {
+                        _state.PC = 0x0038;
+                        return;
+                    }
                     break;
             }
             _state.PC++;
@@ -1084,13 +1177,13 @@ namespace AssemblerSimulator8085.Simulator
         {
             _state.SP -= 2;
             byte[] temp = BitConverter.GetBytes(element);
-            _state.Memory[_state.SP] = temp[0];
-            _state.Memory[_state.SP + 1] = temp[1];
+            _state.Memory[_state.SP] = temp[1];
+            _state.Memory[_state.SP + 1] = temp[0];
         }
 
         private ushort PopFromStack()
         {
-            var temp = BitConverter.ToUInt16(_state.Memory, (_state.SP));
+            var temp = BitConverter.ToUInt16(new byte[] { _state.Memory[_state.SP+1], _state.Memory[_state.SP] }, 0);
             _state.SP += 2;
             return temp;
         }
