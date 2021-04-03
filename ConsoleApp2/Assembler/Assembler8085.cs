@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace AssemblerSimulator8085.Assembler
 {
-    internal partial class Assembler8085 
+    internal partial class Assembler8085
     {
         private readonly Regex re = new Regex(@"((?<label>^.+?(?=:)):)?((?<1>ADCA|ADDA|ANAA|CMPA|DCRA|INRA|ORAA|SBBA|SUBA|XRAA|ADCB|ADDB|ANAB|CMPB|DADB|DCRB|DCXB|INRB|INXB|LDAXB|ORAB|POPB|PUSHB|SBBB|STAXB|SUBB|XRAB|ADCC|ADDC|ANAC|CMPC|DCRC|INRC|ORAC|SBBC|SUBC|XRAC|ADCD|ADDD|ANAD|CMPD|DADD|DCRD|DCXD|INRD|INXD|LDAXD|ORAD|POPD|PUSHD|SBBD|STAXD|SUBD|XRAD|ADCE|ADDE|ANAE|CMPE|DCRE|INRE|ORAE|SBBE|SUBE|XRAE|ADCH|ADDH|ANAH|CMPH|DADH|DCRH|DCXH|INRH|INXH|ORAH|POPH|PUSHH|SBBH|SUBH|XRAH|ADCL|ADDL|ANAL|CMPL|DCRL|INRL|ORAL|SBBL|SUBL|XRAL|ADCM|ADDM|ANAM|CMPM|DCRM|INRM|ORAM|SBBM|SUBM|XRAM|MOVA,A|MOVA,B|MOVA,C|MOVA,D|MOVA,E|MOVA,H|MOVA,L|MOVA,M|MOVB,A|MOVB,B|MOVB,C|MOVB,D|MOVB,E|MOVB,H|MOVB,L|MOVB,M|MOVC,A|MOVC,B|MOVC,C|MOVC,D|MOVC,E|MOVC,H|MOVC,L|MOVC,M|MOVD,A|MOVD,B|MOVD,C|MOVD,D|MOVD,E|MOVD,H|MOVD,L|MOVD,M|MOVE,A|MOVE,B|MOVE,C|MOVE,D|MOVE,E|MOVE,H|MOVE,L|MOVE,M|MOVH,A|MOVH,B|MOVH,C|MOVH,D|MOVH,E|MOVH,H|MOVH,L|MOVH,M|MOVL,A|MOVL,B|MOVL,C|MOVL,D|MOVL,E|MOVL,H|MOVL,L|MOVL,M|MOVM,A|MOVM,B|MOVM,C|MOVM,D|RST0|RST1|RST2|RST3|RST4|RST5|RST6|RST7|MOVM,E|MOVM,H|MOVM,L|POPPSW|PUSHPSW|DADSP|DCXSP|INXSP|LXISP|STC|CMA|CMC|DAA|DI|EI|HLT|NOP|PCHL|RAC|RAL|RAR|RET|RIM|RLC|RM|RNC|RNZ|RP|RPE|RPO|RRC|RZ|SIM|SPHL|XCHG|XTHL)|((?<2>MVIA,|MVIB,|MVIC,|MVID,|MVIE,|MVIH,|MVIL,|MVIM,|ACI|ADI|ANI|CPI|ORI|SBI|SUI|XRI|IN|OUT)((?<hex2>[0-9A-F]{1,2}(?=H))|(?<dec2>[0-9]{1,3}(?=D))|(?<bin2>[0|1]{1,8}(?=B))).)|((?<3>CALL|CNC|CNZ|CPE|CC|CM|CPO|CP|CZ|JMP|JNC|JNZ|JPE|JPO|JP|JC|JM|JZ|LDA|LHLD|SHLD|STA|LXIB,|LXID,|LXIH,|LXISP,)(((?<hex3>[0-9A-F]{1,4}(?=H))|(?<dec3>[0-9]{1,5}(?=D))|(?<bin3>[0|1]{1,16}(?=B))).|(?<lbl3>.+?$))))(?<extra>.+?$)?", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
         private DictionarySlim<string, ushort> labels; //labels that point to a memory address of the 8085
@@ -26,13 +26,13 @@ namespace AssemblerSimulator8085.Assembler
             counter = 0;
             code_addresses = new();
         }
-        
+
         private void CheckForUnresolvedLabels() //to check if any label was found but not declared in the program. Adds a compile time error for each label not found
         {
             if (to_be_resolved.Count is not 0)
             {
-                foreach (var label in to_be_resolved)
-                    foreach (var line in label.Value)
+                foreach (KeyValuePair<string, IReadOnlyCollection<KeyValuePair<ushort, int>>> label in to_be_resolved)
+                    foreach (KeyValuePair<ushort, int> line in label.Value)
                         errors_list.Add(new AssembleError($"Label \"{label.Key}\"Could not be found", line.Value));
             }
         }
@@ -44,10 +44,10 @@ namespace AssemblerSimulator8085.Assembler
             else
             {
                 labels.GetOrAddValueRef(match.Groups["label"].Value) = counter;
-                if (to_be_resolved.TryGetValue(match.Groups["label"].Value, out var address_line))
+                if (to_be_resolved.TryGetValue(match.Groups["label"].Value, out IReadOnlyCollection<KeyValuePair<ushort, int>> address_line))
                 {
                     byte[] address_bytes = BitConverter.GetBytes(counter);
-                    foreach (var item in address_line)
+                    foreach (KeyValuePair<ushort, int> item in address_line)
                     {
                         temp_memory[item.Key] = address_bytes[0];
                         temp_memory[item.Key + 1] = address_bytes[1];
@@ -114,15 +114,15 @@ namespace AssemblerSimulator8085.Assembler
             else
                 errors_list.Add(new AssembleError($"Not enough memory to add 3-byte instruction {match.Groups["2"].Value} to memory address {counter.ToString("X")}", line_number));
         }
-        
-        public byte[] Assemble(string source,int load_at=0)//load at for memory reference of instruction
+
+        public byte[] Assemble(string source, int load_at = 0)//load at for memory reference of instruction
         {
             ResetAssembler();
-            var code_lines = Regex.Replace(source, @"( +?)|(;.*?$)", "", RegexOptions.IgnoreCase | RegexOptions.Multiline).ToUpper().Split("\n");
-            foreach (var line in code_lines)
+            string[] code_lines = Regex.Replace(source, @"( +?)|(;.*?$)", "", RegexOptions.IgnoreCase | RegexOptions.Multiline).ToUpper().Split("\n");
+            foreach (string line in code_lines)
             {
                 code_addresses.Add(line_number, (ushort)(load_at + counter));
-                var match = re.Match(line);
+                Match match = re.Match(line);
                 if (match.Captures.Count is 0)
                 {
                     if (line is not "")
@@ -143,7 +143,7 @@ namespace AssemblerSimulator8085.Assembler
                 line_number++;
             }
             CheckForUnresolvedLabels();
-            if (errors_list.Count is 0 && counter>0)
+            if (errors_list.Count is 0 && counter > 0)
                 return temp_memory.AsMemory(0, counter).ToArray();
             else
                 return null;
