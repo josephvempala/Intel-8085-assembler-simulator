@@ -71,7 +71,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0x8://no inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0x9://dadb
                     _state.flags.CY = (_state.registers.HL + _state.registers.BC > 0xffff);
                     _state.registers.HL = (ushort)(_state.registers.HL + _state.registers.BC);
@@ -107,7 +106,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0x10://no inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0x11://lxid
                     _state.registers.DE = GetNextTwoBytes();
                     _state.PC += 2;
@@ -789,7 +787,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = GetNextTwoBytes();
                         return;
                     }
-                    break;
                 case 0xc4://cnz
                     if (!_state.flags.Z)
                     {
@@ -814,7 +811,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0000;
                         return;
                     }
-                    break;
                 case 0xc8://rz
                     if (_state.flags.Z)
                     {
@@ -825,7 +821,6 @@ namespace AssemblerSimulator8085.Simulator
                 case 0xc9://ret
                     _state.PC = PopFromStack();
                     return;
-                    break;
                 case 0xca://jz
                     if (_state.flags.Z)
                     {
@@ -837,7 +832,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0xcb://no inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0xcc://cz
                     if (_state.flags.Z)
                     {
@@ -852,7 +846,6 @@ namespace AssemblerSimulator8085.Simulator
                     PushToStack(_state.PC);
                     _state.PC = GetNextTwoBytes();
                     return;
-                    break;
                 case 0xce://aci
                     _state.PC++;
                     _state.registers.A = AddByteWithCarry(_state.registers.A, _state.Memory[_state.PC], false);
@@ -862,7 +855,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0008;
                         return;
                     }
-                    break;
                 case 0xd0://rnc
                     if (!_state.flags.CY)
                     {
@@ -908,7 +900,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0010;
                         return;
                     }
-                    break;
                 case 0xd8://rc
                     if (_state.flags.CY)
                     {
@@ -918,7 +909,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0xd9://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0xda://jc
                     if (_state.flags.CY)
                     {
@@ -944,7 +934,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0xdd://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0xde://sbi
                     _state.PC++;
                     _state.registers.A = SubtractByteWithBorrow(_state.registers.A, _state.Memory[_state.PC], false);
@@ -954,7 +943,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0018;
                         return;
                     }
-                    break;
                 case 0xe0://rpo
                     if (_state.flags.P == false)
                     {
@@ -1004,7 +992,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0020;
                         return;
                     }
-                    break;
                 case 0xe8://rpe
                     if (_state.flags.P == true)
                     {
@@ -1044,7 +1031,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0xed://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0xee://xri
                     _state.PC++;
                     _state.registers.A = (byte)(_state.registers.A ^ _state.Memory[_state.PC]);
@@ -1055,7 +1041,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0028;
                         return;
                     }
-                    break;
                 case 0xf0://RP
                     if (_state.flags.S == false)
                     {
@@ -1099,7 +1084,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0030;
                         return;
                     }
-                    break;
                 case 0xf8://rm
                     if (_state.flags.S)
                     {
@@ -1134,7 +1118,6 @@ namespace AssemblerSimulator8085.Simulator
                     break;
                 case 0xfd://no_inst
                     throw new Exception($"Invalid Instruction encountered at memory {_state.PC}");
-                    break;
                 case 0xfe://cpi
                     _state.PC++;
                     SubtractByteWithBorrow(_state.registers.A, _state.Memory[_state.PC], false);
@@ -1144,7 +1127,6 @@ namespace AssemblerSimulator8085.Simulator
                         _state.PC = 0x0038;
                         return;
                     }
-                    break;
             }
             _state.PC++;
         }
