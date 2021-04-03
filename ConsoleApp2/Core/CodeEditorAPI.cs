@@ -27,7 +27,7 @@ namespace AssemblerSimulator8085.Core
         }
         public void Assemble(string codelines, ushort load_at)
         {
-            var assembledProgram = asm.Assemble(codelines);
+            var assembledProgram = asm.Assemble(codelines, load_at);
             if(st.TryWriteToMemory(assembledProgram, 0, assembledProgram.Length, load_at))
             {
                 current_line = 1;
