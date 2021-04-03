@@ -115,16 +115,16 @@ namespace SimulatorTests
             LoadProgram("CALL5000h");
             simulator.Simulate();
             Assert.AreEqual(0x5000, state.PC);
-            Assert.AreEqual(0x00, state.Memory[0xffff]);
-            Assert.AreEqual(0x40, state.Memory[0xfffe]);
+            Assert.AreEqual(0x40, state.Memory[0xffff]);
+            Assert.AreEqual(0x00, state.Memory[0xfffe]);
         }
         [Test]
         public void RET()
         {
             LoadProgram("RET");
             state.SP -= 2;
-            state.Memory[0xffff] = 0x00;
-            state.Memory[0xfffe] = 0x40;
+            state.Memory[0xffff] = 0x40;
+            state.Memory[0xfffe] = 0x00;
             simulator.Simulate();
             Assert.AreEqual(0x4000, state.PC);
         }

@@ -234,7 +234,7 @@ namespace AssemblerSimulator8085.Core
 
         public bool TryWriteToMemory(byte[] buffer, int startIndex, int endIndex, int loadAt)
         {
-            if (endIndex - startIndex < Memory.Length - loadAt)
+            if (endIndex - startIndex <= Memory.Length - loadAt)
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     Memory[loadAt+i] = buffer[i];
@@ -246,7 +246,7 @@ namespace AssemblerSimulator8085.Core
 
         public bool TryWriteToIOPorts(byte[] buffer, int startIndex, int endIndex, int loadAt)
         {
-            if (endIndex - startIndex < IO.Length - loadAt)
+            if (endIndex - startIndex <= IO.Length - loadAt)
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     IO[loadAt + i] = buffer[i];

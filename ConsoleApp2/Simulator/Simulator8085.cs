@@ -60,11 +60,13 @@ namespace AssemblerSimulator8085.Simulator
                     if (_state.registers.A > 0x80)
                     {
                         _state.registers.A = (byte)(_state.registers.A << 1);
+                        _state.flags.CY = true;
                         _state.registers.A++;
                     }
                     else
                     {
                         _state.registers.A = (byte)(_state.registers.A << 1);
+                        _state.flags.CY = false;
                     }
                     break;
                 case 0x8://no inst
@@ -94,10 +96,12 @@ namespace AssemblerSimulator8085.Simulator
                     if (_state.registers.A % 2 == 0)
                     {
                         _state.registers.A = (byte)(_state.registers.A >> 1);
+                        _state.flags.CY = false;
                     }
                     else
                     {
                         _state.registers.A = (byte)((_state.registers.A >> 1));
+                        _state.flags.CY = true;
                         _state.registers.A += 0x80;
                     }
                     break;
@@ -127,14 +131,20 @@ namespace AssemblerSimulator8085.Simulator
                 case 0x17://ral
                     if (_state.flags.CY)
                     {
+                        if ((_state.registers.A & 128) == 0)//checking if msb is 0
+                        {
+                            _state.flags.CY = false;
+                        }
                         _state.registers.A = (byte)(_state.registers.A << 1);
-                        _state.registers.A++;
-                        _state.flags.CY = (_state.registers.A > 0x80);
+                        _state.registers.A += 1;
                     }
                     else
                     {
+                        if ((_state.registers.A & 128) == 128)//checking if msb is 0
+                        {
+                            _state.flags.CY = true;
+                        }
                         _state.registers.A = (byte)(_state.registers.A << 1);
-                        _state.flags.CY = (_state.registers.A > 0x80);
                     }
                     break;
                 case 0x18://no inst
@@ -160,31 +170,22 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.E = _state.Memory[_state.PC];
                     break;
                 case 0x1f://rar
-                    if (_state.flags.CY)//refactor
+                    if(_state.flags.CY)
                     {
-                        if (_state.registers.A % 2 == 0)
+                        if ((_state.registers.A & 1) == 0)
                         {
-                            _state.registers.A = (byte)(_state.registers.A >> 1);
-                            _state.registers.A += 0x80;
                             _state.flags.CY = false;
                         }
-                        else
-                        {
-                            _state.registers.A = (byte)(_state.registers.A >> 1);
-                            _state.registers.A += 0x80;
-                        }
+                        _state.registers.A = (byte)(_state.registers.A >> 1);
+                        _state.registers.A += 128;
                     }
                     else
                     {
-                        if (_state.registers.A % 2 == 0)
+                        if ((_state.registers.A & 1) == 1)
                         {
-                            _state.registers.A = (byte)(_state.registers.A >> 1);
-                        }
-                        else
-                        {
-                            _state.registers.A = (byte)(_state.registers.A >> 1);
                             _state.flags.CY = true;
                         }
+                        _state.registers.A = (byte)(_state.registers.A >> 1);
                     }
                     break;
                 case 0x20://rim
@@ -976,8 +977,8 @@ namespace AssemblerSimulator8085.Simulator
                 case 0xe3://xthl
                     {
                         ushort temp = _state.registers.HL;
-                        _state.registers.HL = _state.SP;
-                        _state.SP = temp;
+                        _state.registers.HL = PopFromStack();
+                        PushToStack(temp);
                     }
                     break;
                 case 0xe4://cpo
@@ -1177,13 +1178,13 @@ namespace AssemblerSimulator8085.Simulator
         {
             _state.SP -= 2;
             byte[] temp = BitConverter.GetBytes(element);
-            _state.Memory[_state.SP] = temp[1];
-            _state.Memory[_state.SP + 1] = temp[0];
+            _state.Memory[_state.SP] = temp[0];
+            _state.Memory[_state.SP + 1] = temp[1];
         }
 
         private ushort PopFromStack()
         {
-            var temp = BitConverter.ToUInt16(new byte[] { _state.Memory[_state.SP+1], _state.Memory[_state.SP] }, 0);
+            var temp = BitConverter.ToUInt16(_state.Memory,_state.SP);
             _state.SP += 2;
             return temp;
         }
@@ -1197,8 +1198,8 @@ namespace AssemblerSimulator8085.Simulator
                 if ((temp & 1) == 1)
                 {
                     count++;
-                    temp = temp >> 1;
                 }
+                temp = temp >> 1;
             }
             return ((count & 1) == 0);
         }
