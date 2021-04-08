@@ -1,0 +1,9 @@
+﻿#editor {
+    position: relative;
+    height: 500px;
+    width: 100%;
+}
+.ace_gutter-cell.ace_breakpoint {
+    background-repeat: no-repeat;
+    background-position: 2px center;
+}

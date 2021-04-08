@@ -1,0 +1,22 @@
+th {
+    vertical-align: middle;
+    text-align: center;
+    top: 0;
+    background: white;
+}
+td {
+    vertical-align: middle;
+    text-align: center;
+}
+input {
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    background-color:transparent;
+}
+.outline{
+    border: 2px solid gray;
+    position:relative;
+}

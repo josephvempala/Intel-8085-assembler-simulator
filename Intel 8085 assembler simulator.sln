@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssemblerSimulator8085", "ConsoleApp2\AssemblerSimulator8085.csproj", "{A1383046-77F0-4A68-8ED7-B880D70E7D72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssemblerSimulator8085", "AssemblerSimulator8085\AssemblerSimulator8085.csproj", "{A1383046-77F0-4A68-8ED7-B880D70E7D72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C11801EE-7E02-4958-A52F-9A52918EFC06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{C11801EE-7E02-4958-A52F-9A52918EFC06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

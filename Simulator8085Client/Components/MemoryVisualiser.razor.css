@@ -1,0 +1,29 @@
+﻿input {
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+    border-width: 0;
+    box-shadow: none;
+    background-color:transparent;
+}
+th {
+    position: sticky;
+    top: 0;
+    background: white;
+    vertical-align: middle;
+    text-align: center;
+}
+td {
+    vertical-align: middle;
+    text-align: center;
+}
+#ScrollingDiv{
+    border: 2px solid gray;
+    height:500px;
+    overflow-y:scroll;
+    position:relative;
+}
+select{
+    border: 0;
+    outline: 0;
+}

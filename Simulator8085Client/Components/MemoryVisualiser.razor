@@ -1,0 +1,106 @@
+﻿@inject IJSRuntime JS
+<div class="content">
+    <div class="row justify-content-between no-gutters">
+        <div class="col-sm-3">
+            <span style="font-size: large;">Memory</span>
+        </div>
+        <div class="col-sm-3">
+            <span><button class="btn btn-secondary btn-sm">Reset</button></span>
+        </div>
+    </div>
+    <div id="ScrollingDiv" class="row no-gutters">
+        <div class="col-sm-12">
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                    <tr><th>Address </th><th scope="col">Data</th></tr>
+                    <tr>
+                        <th>Goto Address</th>
+                        <th scope="col">
+                            <div>
+                                <select @bind="DisplaySystem">
+                                    <option value=16>hex</option>
+                                    <option value=2>bin</option>
+                                    <option value=10>dec</option></select>
+                                    <input size="4" placeholder="Address" maxlength="16" @onchange=@(SearchForMemoryAddress)/>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <Virtualize Items="temp" Context="mem">
+                        <tr>
+                            <td>@Convert.ToString(mem, DisplaySystem).ToUpper()</td>
+                            <td><input size="4" maxlength="8" @bind-value="@this[mem]" id="mem-@mem" class="input" /></td>
+                        </tr>
+                    </Virtualize>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public EventCallback<byte[]> MemoryChanged { get; set; }
+
+    [Parameter]
+    public byte[] Memory { get; set; }
+
+    int[] temp { get; set; }
+
+    private int DisplaySystem { get; set; }
+
+    private int SearchAddress { get;set; }
+    public string this[int index] //memory elements
+    {
+        get
+        {
+            if(index<=ushort.MaxValue)
+                return Convert.ToString(Memory[index], DisplaySystem).ToUpper();
+            else
+               return null;
+        }
+        set
+        {
+            try
+            {
+                Memory[index] = Convert.ToByte(value, DisplaySystem);
+            }
+            catch
+            {
+                Memory[index] = Memory[index];
+            }
+            finally
+            {
+                StateHasChanged();
+                MemoryChanged.InvokeAsync(Memory);
+            }
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        temp = Enumerable.Range(0, ushort.MaxValue + 1).ToArray();
+        DisplaySystem = 16;
+        return base.OnInitializedAsync();
+    }
+
+    protected void SearchForMemoryAddress(ChangeEventArgs e)
+    {
+        try
+        {
+            SearchAddress = Convert.ToUInt16(e.Value.ToString(),DisplaySystem);
+        }
+        catch
+        {
+            SearchAddress = SearchAddress;
+        }
+        temp = new int[(ushort.MaxValue+1)-SearchAddress];
+        int j=0;
+        for(int i=SearchAddress; i<ushort.MaxValue+1; i++)
+        {
+            temp[j] = i;
+            j++;
+        }
+        StateHasChanged();
+    }
+}

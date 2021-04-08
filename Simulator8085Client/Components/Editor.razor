@@ -1,0 +1,22 @@
+﻿@inject IJSRuntime JS
+<div>
+    <div class="row justify-content-center">
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-secondary">Assemble</button>
+            <button type="button" class="btn btn-secondary">Run</button>
+            <button type="button" class="btn btn-secondary">Stop</button>
+            <button type="button" class="btn btn-secondary">Next</button>
+        </div>
+    </div>
+    <div id="editor">
+    </div>
+</div>
+    @code {
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if(firstRender)
+            {
+                await JS.InvokeVoidAsync("window.InteropFunctions.initializeEditor");
+            }
+        } 
+}
