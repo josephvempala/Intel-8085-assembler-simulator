@@ -1,17 +1,18 @@
 import 'ace-builds/src-noconflict/mode-assembly8085'
 import * as ace from 'ace-builds';
 
+window.editor = null;
 window.InteropFunctions={
     initializeEditor : () => {
         ace.config.set('basePath', '/ace');
-        const editor = ace.edit("editor");
-        editor.session.setMode("ace/mode/assembly8085");
-        editor.resize();
-        editor.on('guttermousedown', function (e) {
+        window.editor = ace.edit("editor");
+        window.editor.session.setMode("ace/mode/assembly8085");
+        window.editor.resize();
+        window.editor.on('guttermousedown', function (e) {
         let target = e.domEvent.target;
         if (target.className.indexOf("ace_gutter-cell") == -1)
             return;
-        if (!editor.isFocused())
+        if (!window.editor.isFocused())
             return;
         if (e.clientX > 25 + target.getBoundingClientRect().left)
             return;
@@ -24,5 +25,8 @@ window.InteropFunctions={
             e.editor.session.clearBreakpoint(row);
         e.stop();
         });
+    },
+    getCode: () => {
+        return editor.getValue();
     },
 }

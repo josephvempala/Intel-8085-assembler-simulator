@@ -1,11 +1,11 @@
 ﻿@inject IJSRuntime JS
-<div class="content">
-    <div class="row justify-content-between no-gutters">
+<div class="content my-1">
+    <div class="row justify-content-between no-gutters pb-2">
         <div class="col-sm-3">
             <span style="font-size: large;">Memory</span>
         </div>
         <div class="col-sm-3">
-            <span><button class="btn btn-secondary btn-sm">Reset</button></span>
+            <span><button @onclick="()=> { ResetMemory.Invoke(); StateChanged.InvokeAsync(); }" class="btn btn-secondary btn-sm">Reset</button></span>
         </div>
     </div>
     <div id="ScrollingDiv" class="row no-gutters">
@@ -40,10 +40,13 @@
 </div>
 @code {
     [Parameter]
-    public EventCallback<byte[]> MemoryChanged { get; set; }
+    public EventCallback StateChanged { get; set; }
 
     [Parameter]
     public byte[] Memory { get; set; }
+
+    [Parameter]
+    public Action ResetMemory { get; set; }
 
     int[] temp { get; set; }
 
@@ -57,7 +60,7 @@
             if(index<=ushort.MaxValue)
                 return Convert.ToString(Memory[index], DisplaySystem).ToUpper();
             else
-               return null;
+                return null;
         }
         set
         {
@@ -72,7 +75,7 @@
             finally
             {
                 StateHasChanged();
-                MemoryChanged.InvokeAsync(Memory);
+                StateChanged.InvokeAsync();
             }
         }
     }

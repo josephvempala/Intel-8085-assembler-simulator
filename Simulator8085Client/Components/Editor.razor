@@ -1,22 +1,59 @@
 ﻿@inject IJSRuntime JS
 <div>
-    <div class="row justify-content-center">
+    <div class="row justify-content-start no-gutters my-2">
         <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-secondary">Assemble</button>
+            <button type="button" @onclick="Assemble" class="btn btn-secondary">Assemble</button>
             <button type="button" class="btn btn-secondary">Run</button>
             <button type="button" class="btn btn-secondary">Stop</button>
             <button type="button" class="btn btn-secondary">Next</button>
         </div>
+        <span class="ml-auto"><label class="mr-2">Load At</label><input @bind-value="Load_at" class="input" maxlength="4" size="4" /></span>
     </div>
     <div id="editor">
     </div>
 </div>
     @code {
+
+        [Parameter]
+        public byte[] Memory { get; set; }
+
+        [Parameter]
+        public EventCallback StateChanged { get; set; }
+
+        [Parameter]
+        public CodeEditorAPI codeEditorAPI { get; set; }
+
+        private ushort load_at = 0;
+        public string Load_at
+        {
+            get
+            {
+                return load_at.ToString("X");
+            }
+            set
+            {
+                load_at = Convert.ToUInt16(value, 16);
+            }
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if(firstRender)
             {
                 await JS.InvokeVoidAsync("window.InteropFunctions.initializeEditor");
             }
-        } 
+        }
+        public async Task Assemble()
+        {
+            string source = await JS.InvokeAsync<string>("window.InteropFunctions.getCode");
+            try
+            {
+                codeEditorAPI.Assemble(source, load_at);
+            }
+            catch(Exception e)
+            {
+                throw new NotImplementedException();
+            }
+            StateChanged.InvokeAsync();
+        }
 }

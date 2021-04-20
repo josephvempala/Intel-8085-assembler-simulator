@@ -1,0 +1,16 @@
+﻿<div id="errors">
+    <table class="table table-hover table-sm">
+        <tr><th>Line</th><th>Error</th></tr>
+        <Virtualize Items="temp" Context="mem">
+            <tr>
+                <td>@mem.line_no</td>
+                <td>@mem.error</td>
+            </tr>
+        </Virtualize>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public List<AssembleError> temp { get; set; }
+}

@@ -72,5 +72,9 @@ namespace AssemblerSimulator8085.Core
             }
             return current_line;
         }
+        public State8085 GetState()
+        {
+            return st;
+        }
     }
 }

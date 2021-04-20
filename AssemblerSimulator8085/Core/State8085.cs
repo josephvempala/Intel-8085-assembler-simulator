@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssemblerSimulator8085.HelperExtensions;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -11,7 +12,59 @@ namespace AssemblerSimulator8085.Core
         public struct Flags
         {
             private bool cy, p, ac, z, s; //Flags
-            internal byte flagreg; //flag register
+            private byte flagreg; //flag register
+            public byte Flagreg
+            {
+                get
+                {
+                    return flagreg;
+                }
+                set
+                {
+                    bool[] temp = value.GetBits();
+                    if(temp[0])
+                    {
+                        s = true;
+                    }
+                    else
+                    {
+                        s = false;
+                    }
+                    if (temp[1])
+                    {
+                        z = true;
+                    }
+                    else
+                    {
+                        z = false;
+                    }
+                    if (temp[3])
+                    {
+                        ac = true;
+                    }
+                    else
+                    {
+                        ac = false;
+                    }
+                    if (temp[5])
+                    {
+                        p = true;
+                    }
+                    else
+                    {
+                        p = false;
+                    }
+                    if (temp[7])
+                    {
+                        cy = true;
+                    }
+                    else
+                    {
+                        cy = false;
+                    }
+                    flagreg = value;
+                }
+            }
             public bool CY
             {
                 get
@@ -180,12 +233,12 @@ namespace AssemblerSimulator8085.Core
         {
             get
             {
-                return BitConverter.ToUInt16(new byte[] { flags.flagreg, registers.A }, 0);
+                return BitConverter.ToUInt16(new byte[] { flags.Flagreg, registers.A }, 0);
             }
             set
             {
                 byte[] temp = BitConverter.GetBytes(value);
-                flags.flagreg = temp[0];
+                flags.Flagreg = temp[0];
                 registers.A = temp[1];
             }
         }//Program Status Word
