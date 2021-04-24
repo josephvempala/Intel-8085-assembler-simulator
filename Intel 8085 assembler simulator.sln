@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssemblerSimulator8085", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{C11801EE-7E02-4958-A52F-9A52918EFC06}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulator8085Client", "Simulator8085Client\Simulator8085Client.csproj", "{21B08C3B-FE3E-46C4-B6C3-F6419ACAEB6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C11801EE-7E02-4958-A52F-9A52918EFC06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C11801EE-7E02-4958-A52F-9A52918EFC06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C11801EE-7E02-4958-A52F-9A52918EFC06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21B08C3B-FE3E-46C4-B6C3-F6419ACAEB6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21B08C3B-FE3E-46C4-B6C3-F6419ACAEB6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21B08C3B-FE3E-46C4-B6C3-F6419ACAEB6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21B08C3B-FE3E-46C4-B6C3-F6419ACAEB6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

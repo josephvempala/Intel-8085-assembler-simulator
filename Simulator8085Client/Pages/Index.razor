@@ -1,17 +1,48 @@
-﻿@page "/"
+﻿@inject CodeEditorAPI CodeEditorAPI
+@page "/"
 <div class="container">
     <div class="row">
         <div class="col-12 col-sm-3">
-            <FlagsStatus></FlagsStatus>
+            <FlagsStatus StateChanged="StateChanged" State="@State"/>
         </div>
         <div class="col-12 col-sm-6">
-            <Editor></Editor>
+            <Editor codeEditorAPI="CodeEditorAPI" StateChanged="StateChanged" Memory="@State.Memory"/>
         </div>
         <div class="col-12 col-sm-3">
-            <MemoryVisualiser Memory=@mem></MemoryVisualiser>
+            <MemoryVisualiser ResetMemory="@State.ResetMemory" StateChanged="StateChanged" Memory=@State.Memory/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-3 ml-auto">
+            <ErrorDisplay temp="@CodeEditorAPI.errors"></ErrorDisplay>
         </div>
     </div>
 </div>
+PC:@State.PC
+SP:@State.SP
+PSW:@State.PSW
+Flagreg:@State.flags.Flagreg
+A:@State.registers.A
+B:@State.registers.B
+C:@State.registers.C
+D:@State.registers.D
+E:@State.registers.E
+H:@State.registers.H
+L:@State.registers.L
+P:@State.flags.P
+S:@State.flags.S
+CY:@State.flags.CY
+AC:@State.flags.AC
+Z:@State.flags.Z
+
 @code{
-    public byte[] mem = new byte[0xffff+1];
+    State8085 State;
+    protected override async Task OnInitializedAsync()
+    {
+        State = CodeEditorAPI.State;
+    }
+    public void StateChanged()
+    {
+        StateHasChanged();
+    }
 }

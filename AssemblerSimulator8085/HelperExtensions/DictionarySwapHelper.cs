@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace AssemblerSimulator8085.HelperExtensions
 {
     internal static class DictionarySwapHelper
     {
-        public static Dictionary<Y,X> SwapKeyValues<X,Y>(this Dictionary<X,Y> Dictionary)
+        public static Dictionary<Y, X> SwapKeyValues<X, Y>(this Dictionary<X, Y> Dictionary)
         {
             Dictionary<Y, X> swapped = new Dictionary<Y, X>();
-            foreach(var item in Dictionary)
+            foreach (KeyValuePair<X, Y> item in Dictionary)
             {
-                if(!swapped.ContainsKey(item.Value))
+                if (!swapped.ContainsKey(item.Value))
                 {
-                    swapped.Add(item.Value,item.Key);
+                    swapped.Add(item.Value, item.Key);
                 }
             }
             return swapped;

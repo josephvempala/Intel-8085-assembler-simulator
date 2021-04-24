@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AssemblerSimulator8085.HelperExtensions;
+using System;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 
 [assembly: InternalsVisibleTo("Tests")]
 namespace AssemblerSimulator8085.Core
@@ -11,7 +10,40 @@ namespace AssemblerSimulator8085.Core
         public struct Flags
         {
             private bool cy, p, ac, z, s; //Flags
-            internal byte flagreg; //flag register
+            private byte flagreg; //flag register
+            public byte Flagreg
+            {
+                get
+                {
+                    return flagreg;
+                }
+                set
+                {
+                    bool[] temp = value.GetBits();
+                    (cy, p, ac, z, s) = (false, false, false, false, false);
+                    if (temp[0])
+                    {
+                        s = true;
+                    }
+                    if (temp[1])
+                    {
+                        z = true;
+                    }
+                    if (temp[3])
+                    {
+                        ac = true;
+                    }
+                    if (temp[5])
+                    {
+                        p = true;
+                    }
+                    if (temp[7])
+                    {
+                        cy = true;
+                    }
+                    flagreg = value;
+                }
+            }
             public bool CY
             {
                 get
@@ -24,7 +56,7 @@ namespace AssemblerSimulator8085.Core
                     {
                         flagreg += 1;
                     }
-                    else if(value is not true & value != cy)
+                    else if (value is not true & value != cy)
                     {
                         flagreg -= 1;
                     }
@@ -180,12 +212,12 @@ namespace AssemblerSimulator8085.Core
         {
             get
             {
-                return BitConverter.ToUInt16(new byte[] { flags.flagreg, registers.A }, 0);
+                return BitConverter.ToUInt16(new byte[] { flags.Flagreg, registers.A }, 0);
             }
             set
             {
                 byte[] temp = BitConverter.GetBytes(value);
-                flags.flagreg = temp[0];
+                flags.Flagreg = temp[0];
                 registers.A = temp[1];
             }
         }//Program Status Word
@@ -237,7 +269,7 @@ namespace AssemblerSimulator8085.Core
             if (endIndex - startIndex <= Memory.Length - loadAt)
                 for (int i = startIndex; i < endIndex; i++)
                 {
-                    Memory[loadAt+i] = buffer[i];
+                    Memory[loadAt + i] = buffer[i];
                 }
             else
                 return false;

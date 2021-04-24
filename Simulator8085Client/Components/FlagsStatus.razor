@@ -1,33 +1,33 @@
-<div class="content">
+<div class="content my-5">
     <div class="row outline no-gutters">
         <table class="table table-striped table-hover table-sm">
             <thead>
-                <tr><th>Registers</th><th><button class="btn btn-secondary btn-sm">Reset</button></th></tr>
+                <tr><th>Registers</th><th><button @onclick="()=> { State.ResetRegisters(); StateChanged.InvokeAsync(); }" class="btn btn-secondary btn-sm">Reset</button></th></tr>
             </thead>
             <tbody>
                 <tr>
                     <td><span>A/PSW</span></td>
-                    <td><input class="input" size="2" maxlength="2"><input class="input" size="2" maxlength="2"></td>
+                    <td><input class="input register-input" size="2" maxlength="2" @bind-value="A"><input class="input register-input" size="2" maxlength="2" @bind-value="FlagReg"></td>
                 </tr>
                 <tr>
-                    <td><span>BC</span></td>
-                    <td><input class="input" size="4" maxlength="4"></td>
+                    <td><span>B C</span></td>
+                    <td><input class="input register-input" size="2" maxlength="2" @bind-value="B" ><input class="input register-input" size="2" maxlength="2" @bind-value="C"></td>
                 </tr>
                 <tr>
-                    <td><span>DE</span></td>
-                    <td><input class="input" size="4" maxlength="4"></td>
+                    <td><span>D E</span></td>
+                    <td><input class="input register-input" size="2" maxlength="2" @bind-value="D"><input class="input register-input" size="2" maxlength="2" @bind-value="E"></td>
                 </tr>
                 <tr>
-                    <td><span>HL</span></td>
-                    <td><input class="input" size="4" maxlength="4"></td>
+                    <td><span>H L</span></td>
+                    <td><input class="input register-input" size="2" maxlength="2" @bind-value="H"><input class="input register-input" size="2" maxlength="2" @bind-value="L" ></td>
                 </tr>
                 <tr>
                     <td><span>SP</span></td>
-                    <td><input disabled class="input" size="4" maxlength="4"></td>
+                    <td><input disabled class="input register-input" size="4" maxlength="4" @bind-value="@SP" ></td>
                 </tr>
                 <tr>
                     <td><span>PC</span></td>
-                    <td><input disabled class="input" size="4" maxlength="4"></td>
+                    <td><input disabled class="input register-input" size="4" maxlength="4" @bind-value="@PC"></td>
                 </tr>
             </tbody>
         </table>
@@ -35,28 +35,28 @@
     <div class="row outline no-gutters">
         <table class="table table-striped table-hover table-sm">
             <thead>
-                <tr><th>Flags</th><th><button class="btn btn-secondary btn-sm">Reset</button></th></tr>
+                <tr><th>Flags</th><th><button @onclick="()=> { State.ResetFlags(); StateChanged.InvokeAsync(); }" class="btn btn-secondary btn-sm">Reset</button></th></tr>
             </thead>
             <tbody>
                 <tr>
                     <td><span>Z</span></td>
-                    <td><input class="" type="checkbox" id="flexCheckDefault"></td>
+                    <td><input type="checkbox" @bind="Z"></td>
                 </tr>
                 <tr>
                     <td><span>S</span></td>
-                    <td><input class="" type="checkbox" id="flexCheckDefault"></td>
+                    <td><input type="checkbox" @bind="S"></td>
                 </tr>
                 <tr>
                     <td><span>P</span></td>
-                    <td><input class="" type="checkbox" id="flexCheckDefault"></td>
+                    <td><input type="checkbox" @bind="P"></td>
                 </tr>
                 <tr>
                     <td><span>CY</span></td>
-                    <td><input class="" type="checkbox" id="flexCheckDefault"></td>
+                    <td><input type="checkbox" @bind="CY"></td>
                 </tr>
                 <tr>
                     <td><span>AC</span></td>
-                    <td><input class="" type="checkbox" id="flexCheckDefault"></td>
+                    <td><input type="checkbox" @bind="AC"></td>
                 </tr>
             </tbody>
         </table>
@@ -64,5 +64,261 @@
 </div>
 @code
 {
+    [Parameter]
+    public State8085 State { get; set; }
 
+    [Parameter]
+    public EventCallback StateChanged { get; set; }
+
+    public string SP
+    {
+        get
+        {
+            return State.SP.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.SP = Convert.ToUInt16(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.SP = State.SP;
+            }
+        }
+    }
+    public string PC
+    {
+        get
+        {
+            return State.PC.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.PC = Convert.ToUInt16(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.PC = State.PC;
+            }
+        }
+    }
+    public string FlagReg
+    {
+        get
+        {
+            return State.flags.Flagreg.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.flags.Flagreg = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.flags.Flagreg = State.flags.Flagreg;
+            }
+        }
+    }
+
+    public string A
+    {
+        get
+        {
+            return State.registers.A.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.A = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.A = State.registers.A;
+            }
+        }
+    }
+    public string B
+    {
+        get
+        {
+            return State.registers.B.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.B = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.B = State.registers.B;
+            }
+        }
+    }
+    public string C
+    {
+        get
+        {
+            return State.registers.C.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.C = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.C = State.registers.C;
+            }
+        }
+    }
+    public string D
+    {
+        get
+        {
+            return State.registers.D.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.D = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.D = State.registers.D;
+            }
+        }
+    }
+    public string E
+    {
+        get
+        {
+            return State.registers.E.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.E = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.E = State.registers.E;
+            }
+        }
+    }
+    public string H
+    {
+        get
+        {
+            return State.registers.H.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.H = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.H = State.registers.H;
+            }
+        }
+    }
+    public string L
+    {
+        get
+        {
+            return State.registers.L.ToString("X");
+        }
+        set
+        {
+            try
+            {
+                State.registers.L = Convert.ToByte(value, 16);
+                StateChanged.InvokeAsync();
+            }
+            catch
+            {
+                State.registers.L = State.registers.L;
+            }
+        }
+    }
+    public bool P
+    {
+        get
+        {
+            return State.flags.P;
+        }
+        set
+        {
+            State.flags.P = value;
+            StateChanged.InvokeAsync();
+        }
+    }
+    public bool S
+    {
+        get
+        {
+            return State.flags.S;
+        }
+        set
+        {
+            State.flags.S = value;
+            StateChanged.InvokeAsync();
+        }
+    }
+    public bool Z
+    {
+        get
+        {
+            return State.flags.Z;
+        }
+        set
+        {
+            State.flags.Z = value;
+            StateChanged.InvokeAsync();
+        }
+    }
+    public bool CY
+    {
+        get
+        {
+            return State.flags.CY;
+        }
+        set
+        {
+            State.flags.CY = value;
+            StateChanged.InvokeAsync();
+        }
+    }
+    public bool AC
+    {
+        get
+        {
+            return State.flags.AC;
+        }
+        set
+        {
+            State.flags.AC = value;
+            StateChanged.InvokeAsync();
+        }
+    }
 }

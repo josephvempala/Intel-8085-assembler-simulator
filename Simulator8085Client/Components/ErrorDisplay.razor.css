@@ -1,0 +1,18 @@
+﻿th {
+    position: sticky;
+    top: 0;
+    background: white;
+    vertical-align: middle;
+    text-align: center;
+}
+td {
+    vertical-align: middle;
+    text-align: center;
+}
+#errors {
+    border: 2px solid gray;
+    overflow-y: scroll;
+    height: 14rem;
+    overflow-x: scroll;
+    position: relative;
+}
