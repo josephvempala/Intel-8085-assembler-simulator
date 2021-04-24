@@ -3,9 +3,7 @@
     <div class="row justify-content-start no-gutters my-2">
         <div class="btn-group" role="group" aria-label="Basic example">
             <button type="button" @onclick="Assemble" class="btn btn-secondary">Assemble</button>
-            <button type="button" class="btn btn-secondary">Run</button>
-            <button type="button" class="btn btn-secondary">Stop</button>
-            <button type="button" class="btn btn-secondary">Next</button>
+            <button type="button" @onclick="Run" class="btn btn-secondary">Run</button>
         </div>
         <span class="ml-auto"><label class="mr-2">Load At</label><input @bind-value="Load_at" class="input" maxlength="4" size="4" /></span>
     </div>
@@ -24,6 +22,7 @@
         public CodeEditorAPI codeEditorAPI { get; set; }
 
         private ushort load_at = 0;
+
         public string Load_at
         {
             get
@@ -52,8 +51,14 @@
             }
             catch(Exception e)
             {
-                throw new NotImplementedException();
+                codeEditorAPI.errors.Add(new AssembleError(e.Message, 0));
             }
-            StateChanged.InvokeAsync();
+            await StateChanged.InvokeAsync();
+        }
+
+        public async Task Run()
+        {
+            codeEditorAPI.Run();
+            await StateChanged.InvokeAsync();
         }
 }

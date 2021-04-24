@@ -1,6 +1,7 @@
-﻿using System;
-using AssemblerSimulator8085.Core;
+﻿using AssemblerSimulator8085.Core;
 using AssemblerSimulator8085.HelperExtensions;
+using System;
+using System.Threading;
 
 namespace AssemblerSimulator8085.Simulator
 {
@@ -24,10 +25,7 @@ namespace AssemblerSimulator8085.Simulator
             {
                 return BitConverter.ToUInt16(new byte[] { _state.Memory[_state.PC + 1], _state.Memory[0] }, 0);
             }
-            else
-            {
-                return BitConverter.ToUInt16(_state.Memory, 0);
-            }
+            return BitConverter.ToUInt16(_state.Memory, 0);
         }
 
         public void Simulate()
@@ -168,7 +166,7 @@ namespace AssemblerSimulator8085.Simulator
                     _state.registers.E = _state.Memory[_state.PC];
                     break;
                 case 0x1f://rar
-                    if(_state.flags.CY)
+                    if (_state.flags.CY)
                     {
                         if ((_state.registers.A & 1) == 0)
                         {
@@ -1166,7 +1164,7 @@ namespace AssemblerSimulator8085.Simulator
 
         private ushort PopFromStack()
         {
-            var temp = BitConverter.ToUInt16(_state.Memory,_state.SP);
+            ushort temp = BitConverter.ToUInt16(_state.Memory, _state.SP);
             _state.SP += 2;
             return temp;
         }
@@ -1197,8 +1195,8 @@ namespace AssemblerSimulator8085.Simulator
 
         private void ArithmeticOpFlags(ushort result, bool keep_carry)
         {
-            var temp = BitConverter.GetBytes(result);
-            if(!keep_carry)
+            byte[] temp = BitConverter.GetBytes(result);
+            if (!keep_carry)
                 _state.flags.CY = (result > 0xff);
             _state.flags.AC = false;
             _state.flags.Z = (result == 0);
@@ -1236,14 +1234,6 @@ namespace AssemblerSimulator8085.Simulator
             ushort result = (ushort)(minuend - subtrahend - (_state.flags.CY ? 1 : 0));
             ArithmeticOpFlags(result, keep_carry);
             return (byte)result;
-        }
-
-        public void Run()
-        {
-            while(_state.Memory[_state.PC]!=0x76 && _state.PC<=ushort.MaxValue)
-            {
-                Simulate();
-            }
         }
     }
 }

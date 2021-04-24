@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="col-12 col-sm-3 ml-auto">
-            <ErrorDisplay temp="@Errors"></ErrorDisplay>
+            <ErrorDisplay temp="@CodeEditorAPI.errors"></ErrorDisplay>
         </div>
     </div>
 </div>
@@ -37,10 +37,9 @@ Z:@State.flags.Z
 
 @code{
     State8085 State;
-    List<AssembleError> Errors = new List<AssembleError>();
     protected override async Task OnInitializedAsync()
     {
-        State = CodeEditorAPI.GetState();
+        State = CodeEditorAPI.State;
     }
     public void StateChanged()
     {

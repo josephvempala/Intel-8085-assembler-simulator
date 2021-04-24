@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
 namespace AssemblerSimulator8085.Assembler
-{ 
-    partial class Assembler8085
+{
+    internal partial class Assembler8085
     {
         private readonly Dictionary<string, byte> Instructions = new Dictionary<string, byte>()
         {

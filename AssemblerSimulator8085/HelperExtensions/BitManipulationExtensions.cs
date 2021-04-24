@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AssemblerSimulator8085.HelperExtensions
 {
@@ -26,11 +23,11 @@ namespace AssemblerSimulator8085.HelperExtensions
         }
         public static byte GetByte(this bool[] boolArray)
         {
-            byte result=0;
+            byte result = 0;
             bool[] temp = boolArray.Reverse().ToArray();
             for (int i = 0; i < 8; i++)
             {
-                if(temp[i])
+                if (temp[i])
                 {
                     result += (byte)Math.Pow(2, i);
                 }

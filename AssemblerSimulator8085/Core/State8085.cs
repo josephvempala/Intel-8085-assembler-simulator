@@ -1,8 +1,6 @@
 ﻿using AssemblerSimulator8085.HelperExtensions;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 
 [assembly: InternalsVisibleTo("Tests")]
 namespace AssemblerSimulator8085.Core
@@ -22,45 +20,26 @@ namespace AssemblerSimulator8085.Core
                 set
                 {
                     bool[] temp = value.GetBits();
-                    if(temp[0])
+                    (cy, p, ac, z, s) = (false, false, false, false, false);
+                    if (temp[0])
                     {
                         s = true;
-                    }
-                    else
-                    {
-                        s = false;
                     }
                     if (temp[1])
                     {
                         z = true;
                     }
-                    else
-                    {
-                        z = false;
-                    }
                     if (temp[3])
                     {
                         ac = true;
-                    }
-                    else
-                    {
-                        ac = false;
                     }
                     if (temp[5])
                     {
                         p = true;
                     }
-                    else
-                    {
-                        p = false;
-                    }
                     if (temp[7])
                     {
                         cy = true;
-                    }
-                    else
-                    {
-                        cy = false;
                     }
                     flagreg = value;
                 }
@@ -77,7 +56,7 @@ namespace AssemblerSimulator8085.Core
                     {
                         flagreg += 1;
                     }
-                    else if(value is not true & value != cy)
+                    else if (value is not true & value != cy)
                     {
                         flagreg -= 1;
                     }
@@ -290,7 +269,7 @@ namespace AssemblerSimulator8085.Core
             if (endIndex - startIndex <= Memory.Length - loadAt)
                 for (int i = startIndex; i < endIndex; i++)
                 {
-                    Memory[loadAt+i] = buffer[i];
+                    Memory[loadAt + i] = buffer[i];
                 }
             else
                 return false;
